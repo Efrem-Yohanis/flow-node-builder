@@ -48,7 +48,12 @@ const initialNodes: Node[] = [
         host: 'sftp.example.com',
         port: 22,
         username: 'user'
-      }
+      },
+      subnodes: [
+        { id: 'sub1', name: 'Connection Handler', script_name: 'sftp_connect.py', status: 'active' },
+        { id: 'sub2', name: 'File Scanner', script_name: 'file_scan.py', status: 'deployed' },
+        { id: 'sub3', name: 'Data Collector', script_name: 'collect_data.py', status: 'active' }
+      ]
     },
   },
   {
@@ -61,7 +66,11 @@ const initialNodes: Node[] = [
       parameters: {
         schema: 'cdr_schema.asn',
         validation: true
-      }
+      },
+      subnodes: [
+        { id: 'sub4', name: 'Schema Loader', script_name: 'load_schema.py', status: 'deployed' },
+        { id: 'sub5', name: 'Data Parser', script_name: 'parse_asn1.py', status: 'active' }
+      ]
     },
   },
   {
@@ -74,7 +83,12 @@ const initialNodes: Node[] = [
       parameters: {
         rules: 'validation_rules.json',
         strict_mode: true
-      }
+      },
+      subnodes: [
+        { id: 'sub6', name: 'Rule Engine', script_name: 'validate_rules.py', status: 'active' },
+        { id: 'sub7', name: 'Quality Check', script_name: 'quality_check.py', status: 'deployed' },
+        { id: 'sub8', name: 'Error Handler', script_name: 'handle_errors.py', status: 'inactive' }
+      ]
     },
   },
   {
@@ -87,7 +101,11 @@ const initialNodes: Node[] = [
       parameters: {
         lookup_table: 'enrichment_data',
         cache_enabled: true
-      }
+      },
+      subnodes: [
+        { id: 'sub9', name: 'Lookup Service', script_name: 'lookup_data.py', status: 'deployed' },
+        { id: 'sub10', name: 'Cache Manager', script_name: 'cache_mgr.py', status: 'active' }
+      ]
     },
   },
   {
@@ -100,7 +118,11 @@ const initialNodes: Node[] = [
       parameters: {
         storage_path: '/backup/raw_data',
         compression: 'gzip'
-      }
+      },
+      subnodes: [
+        { id: 'sub11', name: 'Backup Writer', script_name: 'write_backup.py', status: 'active' },
+        { id: 'sub12', name: 'Compression Engine', script_name: 'compress_data.py', status: 'deployed' }
+      ]
     },
   },
 ];
