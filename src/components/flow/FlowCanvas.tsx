@@ -14,79 +14,92 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
-import { InputNode } from './nodes/InputNode';
-import { ProcessNode } from './nodes/ProcessNode';
-import { OutputNode } from './nodes/OutputNode';
-import { ConditionalNode } from './nodes/ConditionalNode';
+import { SftpCollectorNode } from './nodes/SftpCollectorNode';
+import { FdcNode } from './nodes/FdcNode';
+import { Asn1DecoderNode } from './nodes/Asn1DecoderNode';
+import { AsciiDecoderNode } from './nodes/AsciiDecoderNode';
+import { ValidationBlnNode } from './nodes/ValidationBlnNode';
+import { EnrichmentBlnNode } from './nodes/EnrichmentBlnNode';
+import { EncoderNode } from './nodes/EncoderNode';
+import { DiameterInterfaceNode } from './nodes/DiameterInterfaceNode';
+import { RawBackupNode } from './nodes/RawBackupNode';
 
 const nodeTypes = {
-  input: InputNode,
-  process: ProcessNode,
-  output: OutputNode,
-  conditional: ConditionalNode,
+  sftp_collector: SftpCollectorNode,
+  fdc: FdcNode,
+  asn1_decoder: Asn1DecoderNode,
+  ascii_decoder: AsciiDecoderNode,
+  validation_bln: ValidationBlnNode,
+  enrichment_bln: EnrichmentBlnNode,
+  encoder: EncoderNode,
+  diameter_interface: DiameterInterfaceNode,
+  raw_backup: RawBackupNode,
 };
 
 const initialNodes: Node[] = [
   {
     id: '1',
-    type: 'input',
+    type: 'sftp_collector',
     position: { x: 100, y: 100 },
     data: { 
-      label: 'Data Input',
-      description: 'External data source',
+      label: 'SFTP Source',
+      description: 'Collect data from SFTP server',
       parameters: {
-        source: 'database',
-        table: 'users'
+        host: 'sftp.example.com',
+        port: 22,
+        username: 'user'
       }
     },
   },
   {
     id: '2',
-    type: 'process',
+    type: 'asn1_decoder',
     position: { x: 400, y: 100 },
     data: { 
-      label: 'Transform Data',
-      description: 'Process and clean data',
+      label: 'ASN.1 Decoder',
+      description: 'Decode ASN.1 formatted data',
       parameters: {
-        script: 'data_cleaner.py',
-        mode: 'strict'
+        schema: 'cdr_schema.asn',
+        validation: true
       }
     },
   },
   {
     id: '3',
-    type: 'conditional',
+    type: 'validation_bln',
     position: { x: 700, y: 100 },
     data: { 
-      label: 'Validation Check',
-      description: 'Validate data quality',
+      label: 'Data Validation',
+      description: 'Validate data quality and format',
       parameters: {
-        threshold: 0.8,
-        action: 'reject'
+        rules: 'validation_rules.json',
+        strict_mode: true
       }
     },
   },
   {
     id: '4',
-    type: 'output',
+    type: 'enrichment_bln',
     position: { x: 1000, y: 50 },
     data: { 
-      label: 'Success Output',
-      description: 'Clean data destination',
+      label: 'Data Enrichment',
+      description: 'Enrich data with additional fields',
       parameters: {
-        destination: 'clean_data_table'
+        lookup_table: 'enrichment_data',
+        cache_enabled: true
       }
     },
   },
   {
     id: '5',
-    type: 'output',
+    type: 'raw_backup',
     position: { x: 1000, y: 200 },
     data: { 
-      label: 'Error Output',
-      description: 'Failed validation logs',
+      label: 'Raw Backup',
+      description: 'Store raw data for backup',
       parameters: {
-        destination: 'error_logs'
+        storage_path: '/backup/raw_data',
+        compression: 'gzip'
       }
     },
   },

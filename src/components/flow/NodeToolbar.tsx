@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Database, Cpu, FileOutput, GitBranch, Plus } from 'lucide-react';
+import { Database, CheckCircle, Activity, FileText, Filter, AlertCircle, RotateCcw, Globe, Plus } from 'lucide-react';
 
 interface NodeToolbarProps {
   onAddNode: (type: string) => void;
@@ -8,10 +8,15 @@ interface NodeToolbarProps {
 
 export function NodeToolbar({ onAddNode }: NodeToolbarProps) {
   const nodeTypes = [
-    { type: 'input', icon: Database, label: 'Input', color: 'hsl(var(--node-input))' },
-    { type: 'process', icon: Cpu, label: 'Process', color: 'hsl(var(--node-process))' },
-    { type: 'conditional', icon: GitBranch, label: 'Conditional', color: 'hsl(var(--node-conditional))' },
-    { type: 'output', icon: FileOutput, label: 'Output', color: 'hsl(var(--node-output))' },
+    { type: 'sftp_collector', icon: Database, label: 'SFTP Collector', color: 'hsl(217 91% 60%)' },
+    { type: 'fdc', icon: CheckCircle, label: 'FDC', color: 'hsl(142 76% 36%)' },
+    { type: 'asn1_decoder', icon: Activity, label: 'ASN.1 Decoder', color: 'hsl(271 91% 65%)' },
+    { type: 'ascii_decoder', icon: FileText, label: 'ASCII Decoder', color: 'hsl(45 93% 47%)' },
+    { type: 'validation_bln', icon: Filter, label: 'Validation BLN', color: 'hsl(0 84% 60%)' },
+    { type: 'enrichment_bln', icon: AlertCircle, label: 'Enrichment BLN', color: 'hsl(25 95% 53%)' },
+    { type: 'encoder', icon: RotateCcw, label: 'Encoder', color: 'hsl(173 80% 40%)' },
+    { type: 'diameter_interface', icon: Globe, label: 'Diameter Interface', color: 'hsl(231 81% 63%)' },
+    { type: 'raw_backup', icon: Database, label: 'Raw Backup', color: 'hsl(0 0% 45%)' },
   ];
 
   return (
