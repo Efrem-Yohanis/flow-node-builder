@@ -1,7 +1,10 @@
 import { memo, useState } from "react";
 import { Handle, Position } from "@xyflow/react";
 import { Badge } from "@/components/ui/badge";
-import { Database, ChevronDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Database, ChevronDown, Play, Square, Settings } from "lucide-react";
+import { subnodeService } from "@/services/subnodeService";
+import { toast } from "sonner";
 
 interface SftpCollectorNodeProps {
   data: {
@@ -26,6 +29,39 @@ interface SftpCollectorNodeProps {
 
 export const SftpCollectorNode = memo(({ data, selected }: SftpCollectorNodeProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [deployingSubnodes, setDeployingSubnodes] = useState<Set<string>>(new Set());
+
+  const handleSubnodeDeploy = async (subnodeId: string) => {
+    setDeployingSubnodes(prev => new Set(prev).add(subnodeId));
+    try {
+      await subnodeService.deploySubnode(subnodeId);
+      toast.success("Subnode deployed successfully");
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || "Failed to deploy subnode");
+    } finally {
+      setDeployingSubnodes(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(subnodeId);
+        return newSet;
+      });
+    }
+  };
+
+  const handleSubnodeUndeploy = async (subnodeId: string) => {
+    setDeployingSubnodes(prev => new Set(prev).add(subnodeId));
+    try {
+      await subnodeService.undeploySubnode(subnodeId);
+      toast.success("Subnode undeployed successfully");
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || "Failed to undeploy subnode");
+    } finally {
+      setDeployingSubnodes(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(subnodeId);
+        return newSet;
+      });
+    }
+  };
 
   return (
     <div 
@@ -76,22 +112,67 @@ export const SftpCollectorNode = memo(({ data, selected }: SftpCollectorNodeProp
         </div>
 
         {isDropdownOpen && data.subnodes && data.subnodes.length > 0 && (
-          <div className="absolute top-full left-0 right-0 bg-card border border-border rounded-md shadow-lg z-10 mt-1">
+          <div className="absolute top-full left-0 right-0 bg-card border border-border rounded-md shadow-lg z-20 mt-1 min-w-[280px]">
             {data.subnodes.map((subnode) => (
-              <div key={subnode.id} className="p-2 hover:bg-muted border-b border-border last:border-b-0">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-medium text-sm">{subnode.name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      v{subnode.version || 1} • {subnode.parameters?.length || 0} params
+              <div key={subnode.id} className="p-3 hover:bg-muted border-b border-border last:border-b-0">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium text-sm">{subnode.name}</div>
+                      <div className="text-xs text-muted-foreground">
+                        v{subnode.version || 1} • {subnode.parameters?.length || 0} params
+                      </div>
                     </div>
+                    <Badge 
+                      variant={subnode.is_selected ? "default" : "secondary"}
+                      className="text-xs"
+                    >
+                      {subnode.is_selected ? "Selected" : "Available"}
+                    </Badge>
                   </div>
-                  <Badge 
-                    variant={subnode.is_selected ? "default" : "secondary"}
-                    className="text-xs"
-                  >
-                    {subnode.is_selected ? "Selected" : "Available"}
-                  </Badge>
+                  
+                  <div className="flex items-center gap-1">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-6 px-2 text-xs"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSubnodeDeploy(subnode.id);
+                      }}
+                      disabled={deployingSubnodes.has(subnode.id)}
+                    >
+                      <Play className="w-3 h-3 mr-1" />
+                      Deploy
+                    </Button>
+                    
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-6 px-2 text-xs"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSubnodeUndeploy(subnode.id);
+                      }}
+                      disabled={deployingSubnodes.has(subnode.id)}
+                    >
+                      <Square className="w-3 h-3 mr-1" />
+                      Stop
+                    </Button>
+                    
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-6 px-2 text-xs"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        // Navigate to subnode detail page
+                        window.open(`/subnodes/${subnode.id}`, '_blank');
+                      }}
+                    >
+                      <Settings className="w-3 h-3" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}
