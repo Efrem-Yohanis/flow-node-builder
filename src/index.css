@@ -1,87 +1,148 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Flow Orchestrator Design System */
 
 @layer base {
   :root {
-    /* Flow Builder Design System */
-    --background: 220 13% 8%;
-    --foreground: 210 40% 98%;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
 
-    --card: 220 13% 10%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
 
-    --popover: 220 13% 12%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 263 85% 65%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 263 85% 75%;
+    /* Flow Orchestrator Primary Colors */
+    --primary: 259 94% 51%;
+    --primary-foreground: 210 40% 98%;
+    --primary-glow: 259 94% 65%;
 
-    --secondary: 220 13% 15%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
 
-    --muted: 220 13% 14%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 217 91% 60%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
 
-    --destructive: 0 62.8% 50%;
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 220 13% 18%;
-    --input: 220 13% 15%;
-    --ring: 263 85% 65%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 259 94% 51%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    /* Flow Canvas Colors */
-    --canvas-bg: 220 13% 6%;
-    --canvas-grid: 220 13% 12%;
-    --canvas-node-bg: 220 13% 12%;
-    --canvas-node-border: 220 13% 20%;
-    --canvas-node-hover: 220 13% 16%;
-    --canvas-edge: 220 13% 35%;
-    --canvas-edge-hover: 263 85% 65%;
+    /* Flow Orchestrator Specific Colors */
+    --success: 142 76% 36%;
+    --success-foreground: 210 40% 98%;
+    --warning: 43 96% 56%;
+    --warning-foreground: 222.2 84% 4.9%;
+    --info: 217 91% 60%;
+    --info-foreground: 210 40% 98%;
 
-    /* Node Type Colors */
-    --node-input: 142 71% 45%;
-    --node-process: 263 85% 65%;
-    --node-output: 25 95% 53%;
-    --node-conditional: 45 93% 47%;
+    /* Canvas Colors */
+    --canvas-background: 210 40% 98%;
+    --canvas-grid: 214.3 31.8% 91.4%;
+    --node-background: 0 0% 100%;
+    --node-border: 214.3 31.8% 91.4%;
+    --node-deployed: 142 76% 36%;
+    --node-undeployed: 215.4 16.3% 46.9%;
+    --node-running: 259 94% 51%;
+    --node-stopped: 0 84.2% 60.2%;
+    --edge-default: 215.4 16.3% 46.9%;
+    --edge-active: 259 94% 51%;
+
+    /* Sidebar */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 259 94% 51%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 259 94% 51%;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(263 85% 65%), hsl(217 91% 60%));
-    --gradient-canvas: linear-gradient(135deg, hsl(220 13% 6%), hsl(220 13% 8%));
-    --gradient-node: linear-gradient(135deg, hsl(220 13% 12%), hsl(220 13% 14%));
-    --gradient-glow: radial-gradient(circle at center, hsl(263 85% 65% / 0.3), transparent 70%);
-
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-canvas: linear-gradient(180deg, hsl(var(--canvas-background)), hsl(var(--background)));
+    
     /* Shadows */
-    --shadow-node: 0 4px 12px hsl(220 13% 4% / 0.4);
-    --shadow-panel: 0 8px 32px hsl(220 13% 4% / 0.6);
-    --shadow-glow: 0 0 24px hsl(263 85% 65% / 0.4);
-
-    /* Animation */
+    --shadow-elegant: 0 10px 30px -10px hsl(var(--primary) / 0.3);
+    --shadow-node: 0 2px 8px -2px hsl(var(--foreground) / 0.1);
+    --shadow-canvas: 0 4px 16px -4px hsl(var(--foreground) / 0.1);
+    
+    /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-spring: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-
-    --sidebar-background: 220 13% 9%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 263 85% 65%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 13% 15%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 220 13% 18%;
-    --sidebar-ring: 263 85% 65%;
+    --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .dark {
-    /* Already using dark theme as default */
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 259 94% 65%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary-glow: 259 94% 75%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 259 94% 65%;
+
+    --success: 142 76% 45%;
+    --success-foreground: 210 40% 98%;
+    --warning: 43 96% 60%;
+    --warning-foreground: 222.2 84% 4.9%;
+    --info: 217 91% 65%;
+    --info-foreground: 210 40% 98%;
+
+    --canvas-background: 217.2 32.6% 17.5%;
+    --canvas-grid: 217.2 32.6% 20%;
+    --node-background: 217.2 32.6% 17.5%;
+    --node-border: 217.2 32.6% 25%;
+    --node-deployed: 142 76% 45%;
+    --node-undeployed: 215 20.2% 65.1%;
+    --node-running: 259 94% 65%;
+    --node-stopped: 0 62.8% 30.6%;
+    --edge-default: 215 20.2% 65.1%;
+    --edge-active: 259 94% 65%;
+
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 259 94% 65%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 259 94% 65%;
+
+    --shadow-elegant: 0 10px 30px -10px hsl(var(--primary) / 0.4);
+    --shadow-node: 0 2px 8px -2px hsl(var(--foreground) / 0.2);
+    --shadow-canvas: 0 4px 16px -4px hsl(var(--foreground) / 0.2);
   }
 }
 
@@ -95,77 +156,51 @@ All colors MUST be HSL.
   }
 }
 
-/* React Flow Customizations */
-.react-flow {
-  background: hsl(var(--canvas-bg));
+@layer utilities {
+  .animate-fade-in {
+    animation: fade-in 0.8s ease-out forwards;
+    opacity: 0;
+  }
+  
+  .animate-slide-up {
+    animation: slide-up 0.6s ease-out forwards;
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  
+  .animate-scale-in {
+    animation: scale-in 0.4s ease-out forwards;
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  
+  .glass-morphism {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .glow-effect {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+  }
 }
 
-.react-flow__node {
-  font-family: inherit;
+@keyframes fade-in {
+  to {
+    opacity: 1;
+  }
 }
 
-.react-flow__handle {
-  border: 2px solid hsl(var(--canvas-edge));
-  background: hsl(var(--background));
-  width: 12px;
-  height: 12px;
+@keyframes slide-up {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
-.react-flow__handle:hover,
-.react-flow__handle.connectionindicator {
-  border-color: hsl(var(--canvas-edge-hover));
-  box-shadow: 0 0 0 2px hsl(var(--canvas-edge-hover) / 0.2);
-}
-
-.react-flow__edge-path {
-  stroke: hsl(var(--canvas-edge));
-  stroke-width: 2px;
-}
-
-.react-flow__edge.selected .react-flow__edge-path,
-.react-flow__edge:hover .react-flow__edge-path {
-  stroke: hsl(var(--canvas-edge-hover));
-}
-
-.react-flow__edge-textbg {
-  fill: hsl(var(--background));
-}
-
-.react-flow__edge-text {
-  fill: hsl(var(--foreground));
-  font-size: 11px;
-  font-weight: 500;
-}
-
-.react-flow__controls {
-  background: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
-  border-radius: calc(var(--radius) - 2px);
-  box-shadow: var(--shadow-panel);
-}
-
-.react-flow__controls-button {
-  background: hsl(var(--card));
-  border: none;
-  color: hsl(var(--muted-foreground));
-  border-bottom: 1px solid hsl(var(--border));
-  transition: all 0.2s ease;
-}
-
-.react-flow__controls-button:hover {
-  background: hsl(var(--muted));
-  color: hsl(var(--foreground));
-}
-
-.react-flow__minimap {
-  background: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
-  border-radius: calc(var(--radius) - 2px);
-  box-shadow: var(--shadow-panel);
-}
-
-.react-flow__attribution {
-  background: hsl(var(--muted));
-  color: hsl(var(--muted-foreground));
-  font-size: 10px;
+@keyframes scale-in {
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }

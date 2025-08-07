@@ -1,7 +1,14 @@
-import { FlowBuilder } from '@/components/flow/FlowBuilder';
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
-  return <FlowBuilder />;
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    navigate("/");
+  }, [navigate]);
+
+  return null;
 };
 
 export default Index;
