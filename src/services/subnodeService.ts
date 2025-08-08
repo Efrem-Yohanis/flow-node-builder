@@ -36,18 +36,21 @@ export interface SubnodeDetail {
 
 export interface SubnodeVersion {
   id: string;
-  name: string;
   version: number;
+  is_active: boolean;
 }
 
 export interface ParameterValueRequest {
-  parameter_id: string;
   value: string;
 }
 
 export interface ParameterValueResponse {
-  status: string;
-  parameter_value_id: string;
+  id: string;
+  parameter: string;
+  subnode: string;
+  value: string;
+  last_updated_by: string;
+  last_updated_at: string;
 }
 
 // API Service Functions
@@ -76,21 +79,15 @@ export const subnodeService = {
     return response.data;
   },
 
-  // Deploy subnode
-  async deploySubnode(id: string): Promise<{ status: string }> {
-    const response = await axiosInstance.post(`subnodes/${id}/deploy/`);
+  // Create new subnode
+  async createSubnode(data: Partial<SubnodeDetail>): Promise<SubnodeDetail> {
+    const response = await axiosInstance.post('subnodes/', data);
     return response.data;
   },
 
-  // Undeploy subnode
-  async undeploySubnode(id: string): Promise<{ status: string }> {
-    const response = await axiosInstance.post(`subnodes/${id}/undeploy/`);
-    return response.data;
-  },
-
-  // Add or update parameter value
-  async updateParameterValue(id: string, parameterData: ParameterValueRequest): Promise<ParameterValueResponse> {
-    const response = await axiosInstance.post(`subnodes/${id}/parameter_values/`, parameterData);
+  // Update parameter value
+  async updateParameterValue(parameterValueId: string, parameterData: ParameterValueRequest): Promise<ParameterValueResponse> {
+    const response = await axiosInstance.patch(`parameter-values/${parameterValueId}/`, parameterData);
     return response.data;
   },
 
@@ -101,8 +98,8 @@ export const subnodeService = {
   },
 
   // Activate specific version
-  async activateVersion(id: string, version: number): Promise<SubnodeDetail> {
-    const response = await axiosInstance.post(`subnodes/${id}/activate_version/${version}/`);
+  async activateVersion(id: string, version: number): Promise<{ id: string; version: number; is_active: boolean }> {
+    const response = await axiosInstance.post(`subnodes/${id}/activate-version/`, { version });
     return response.data;
   },
 };
