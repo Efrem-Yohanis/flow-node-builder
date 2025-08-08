@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useDeployedNodes } from '@/services/flowService';
+import { useNodes } from '@/services/nodeService';
 import { 
   Database, 
   Filter, 
@@ -50,7 +50,7 @@ const getNodeColor = (nodeName: string) => {
 };
 
 export function NodePalette({ onAddNode }: NodePaletteProps) {
-  const { data: deployedNodes, loading, error, refetch } = useDeployedNodes();
+  const { data: nodes, loading, error, refetch } = useNodes();
 
   if (loading) {
     return (
@@ -103,22 +103,22 @@ export function NodePalette({ onAddNode }: NodePaletteProps) {
           <Database className="h-5 w-5" />
           Available Nodes
           <Badge variant="secondary" className="ml-auto">
-            {deployedNodes.length}
+            {nodes.length}
           </Badge>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
-        {deployedNodes.length === 0 ? (
+        {nodes.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-sm text-muted-foreground">
-              No deployed nodes available
+              No nodes available
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              Deploy some nodes first to use them in flows
+              Create and deploy some nodes first to use them in flows
             </p>
           </div>
         ) : (
-          deployedNodes.map((node) => {
+          nodes.map((node) => {
             const Icon = getNodeIcon(node.name);
             const colorClass = getNodeColor(node.name);
             

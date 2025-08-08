@@ -98,6 +98,17 @@ const mockDeployedNodes: DeployedNode[] = [
 
 // API Service Functions
 export const flowService = {
+  // Create flownode - add node to flow
+  async createFlowNode(data: { 
+    order?: number | null; 
+    node_id: string; 
+    flow_id: string; 
+    from_node?: string | null; 
+  }): Promise<FlowNode> {
+    const response = await axiosInstance.post('flownodes/', data);
+    return response.data;
+  },
+
   // Create a new flow
   async createFlow(data: { name: string; description: string }): Promise<Flow> {
     // Mock implementation
@@ -116,11 +127,14 @@ export const flowService = {
     return newFlow;
   },
 
-  // Get deployed nodes for flow editor
+  // Get deployed nodes for flow editor - now uses real API
   async getDeployedNodes(): Promise<DeployedNode[]> {
-    // Mock implementation - simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return [...mockDeployedNodes];
+    const response = await axiosInstance.get('nodes/');
+    return response.data.map((node: any) => ({
+      id: node.id,
+      name: node.name,
+      subnodes: node.subnodes || []
+    }));
   },
 
   // Add node to flow

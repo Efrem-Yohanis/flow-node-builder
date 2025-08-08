@@ -53,6 +53,7 @@ import {
 import { NodeConfigDialog } from '@/components/NodeConfigDialog';
 import { NodePalette } from './NodePalette';
 import { useFlow, flowService } from '@/services/flowService';
+import { nodeService } from '@/services/nodeService';
 
 interface NodeData extends Record<string, unknown> {
   label: string;
@@ -195,33 +196,37 @@ export function FlowEditor() {
   // Add node to canvas from API data or drag and drop
   const addNodeToCanvas = async (nodeId: string, position?: { x: number; y: number }) => {
     try {
+      // First, get the actual node data from API
+      const nodeData = await nodeService.getNode(nodeId);
+      
       // Create a visual node for the canvas
       const newNode: Node<NodeData> = {
         id: `canvas-node-${Date.now()}`,
         type: 'custom',
         position: position || { x: Math.random() * 300 + 200, y: Math.random() * 200 + 150 },
         data: {
-          label: `Node ${nodeId}`,
+          label: nodeData.name,
           icon: Database,
-          description: 'Deployed node from API',
+          description: nodeData.description || 'Node from API',
           config: {},
-          connector: 'Default',
-          connectorOptions: ['Default']
+          connector: nodeData.subnodes?.find(s => s.is_selected)?.name || 'Default',
+          connectorOptions: nodeData.subnodes?.map(s => s.name) || ['Default']
         },
       };
       setNodes((prev) => [...prev, newNode]);
 
-      // Add to flow via API
+      // Add to flow via API using the new flownode endpoint
       if (flowId) {
-        await flowService.addNodeToFlow({
-          flow: flowId,
-          node: nodeId,
-          order: nodes.length + 1
+        await flowService.createFlowNode({
+          order: nodes.length + 1,
+          node_id: nodeId,
+          flow_id: flowId,
+          from_node: null
         });
         
         toast({
           title: "Node Added",
-          description: "Node has been added to the flow successfully.",
+          description: `${nodeData.name} has been added to the flow successfully.`,
         });
       }
     } catch (error) {
@@ -413,13 +418,33 @@ export function FlowEditor() {
     input.click();
   };
 
-  const saveFlow = () => {
-    updateCurrentFlow();
-    toast({
-      title: "Flow Saved",
-      description: `${currentFlow.name} has been saved successfully.`,
-    });
-    setActiveView('flows');
+  const saveFlow = async () => {
+    try {
+      if (flowId) {
+        // Update existing flow
+        await flowService.updateFlow(flowId, {
+          name: currentFlow.name,
+          description: currentFlow.name, // Could be separate field
+          // Add other flow properties as needed
+        });
+      } else {
+        // Create new flow - this would need API endpoint
+        console.log('Creating new flow with nodes:', nodes);
+      }
+      
+      updateCurrentFlow();
+      toast({
+        title: "Flow Saved",
+        description: `${currentFlow.name} has been saved as draft successfully.`,
+      });
+    } catch (error) {
+      console.error('Error saving flow:', error);
+      toast({
+        title: "Save Error",
+        description: "Failed to save flow.",
+        variant: "destructive"
+      });
+    }
   };
 
   // Handle node configuration editing
