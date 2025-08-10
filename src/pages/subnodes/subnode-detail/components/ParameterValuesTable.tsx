@@ -14,8 +14,15 @@ interface ParameterValuesTableProps {
 }
 
 export function ParameterValuesTable({ selectedVersion }: ParameterValuesTableProps) {
+  // Handle parameter_values as an array of objects with {id, parameter_key, value}
   const parameterEntries = selectedVersion?.parameter_values 
-    ? Object.entries(selectedVersion.parameter_values)
+    ? Array.isArray(selectedVersion.parameter_values) 
+      ? selectedVersion.parameter_values
+      : Object.entries(selectedVersion.parameter_values).map(([key, value]) => ({ 
+          id: key, 
+          parameter_key: key, 
+          value: value 
+        }))
     : [];
 
   return (
@@ -33,11 +40,13 @@ export function ParameterValuesTable({ selectedVersion }: ParameterValuesTablePr
               </TableRow>
             </TableHeader>
             <TableBody>
-              {parameterEntries.map(([key, value]) => (
-                <TableRow key={key}>
-                  <TableCell className="font-medium">{key}</TableCell>
+              {parameterEntries.map((param) => (
+                <TableRow key={param.id || param.parameter_key}>
+                  <TableCell className="font-medium">
+                    {param.parameter_key}
+                  </TableCell>
                   <TableCell className="font-mono text-sm bg-muted/30 px-2 py-1 rounded">
-                    {value || <span className="text-muted-foreground italic">Empty</span>}
+                    {param.value || <span className="text-muted-foreground italic">Empty</span>}
                   </TableCell>
                 </TableRow>
               ))}
