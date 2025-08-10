@@ -45,58 +45,55 @@ export function SubnodeHeader({
         </div>
         
         <div className="flex items-center space-x-2">
-          <Button 
-            variant="outline" 
-            onClick={onShowVersionHistory}
-            disabled={isLoading}
-          >
-            <History className="h-4 w-4 mr-2" />
-            Version History
-          </Button>
-        </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex items-center space-x-2">
-        {isActiveVersion ? (
-          <>
+          {isActiveVersion ? (
             <Button 
               variant="outline"
               onClick={onCreateNewVersion}
               disabled={isLoading}
+              size="icon"
             >
-              <Edit className="h-4 w-4 mr-2" />
-              Create New Version
+              <Edit className="h-4 w-4" />
             </Button>
-            <Button 
-              variant="destructive"
-              onClick={onUndeployVersion}
-              disabled={isLoading}
-            >
-              <Square className="h-4 w-4 mr-2" />
-              Undeploy
-            </Button>
-          </>
-        ) : canEdit ? (
-          <>
+          ) : canEdit ? (
             <Button 
               variant="outline"
               onClick={onEditVersion}
               disabled={isLoading}
+              size="icon"
             >
-              <Edit className="h-4 w-4 mr-2" />
-              Edit Version
+              <Edit className="h-4 w-4" />
             </Button>
+          ) : null}
+          
+          {isActiveVersion ? (
+            <Button 
+              variant="destructive"
+              onClick={onUndeployVersion}
+              disabled={isLoading}
+              size="icon"
+            >
+              <Square className="h-4 w-4" />
+            </Button>
+          ) : canEdit ? (
             <Button 
               variant="default"
               onClick={onDeployVersion}
               disabled={isLoading}
+              size="icon"
             >
-              <Play className="h-4 w-4 mr-2" />
-              Deploy
+              <Play className="h-4 w-4" />
             </Button>
-          </>
-        ) : null}
+          ) : null}
+          
+          <Button 
+            variant="outline" 
+            onClick={onShowVersionHistory}
+            disabled={isLoading}
+            size="icon"
+          >
+            <History className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );
