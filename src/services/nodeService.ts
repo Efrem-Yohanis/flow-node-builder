@@ -119,3 +119,48 @@ export const useNodes = () => {
 
   return { data, loading, error, refetch };
 };
+
+// Custom hook for single node
+export const useNode = (id: string) => {
+  const [data, setData] = useState<Node | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!id) return;
+
+    const loadNode = async () => {
+      try {
+        setLoading(true);
+        const node = await nodeService.getNode(id);
+        setData(node);
+        setError(null);
+      } catch (err: any) {
+        setError(err.response?.data?.error || err.message || 'Error fetching node');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadNode();
+  }, [id]);
+
+  const refetch = async () => {
+    if (!id) return;
+    
+    setLoading(true);
+    try {
+      const node = await nodeService.getNode(id);
+      setData(node);
+      setError(null);
+    } catch (err: any) {
+      setError(err.response?.data?.error || err.message || 'Error fetching node');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { data, loading, error, refetch };
+};
