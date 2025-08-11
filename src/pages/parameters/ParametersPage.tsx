@@ -180,7 +180,6 @@ export function ParametersPage() {
               <TableRow>
                 <TableHead>Key</TableHead>
                 <TableHead>Default Value</TableHead>
-                <TableHead>Node</TableHead>
                 <TableHead>Required</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -198,11 +197,6 @@ export function ParametersPage() {
                     </Button>
                   </TableCell>
                   <TableCell>{param.default_value}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">
-                      {param.node}
-                    </Badge>
-                  </TableCell>
                   <TableCell>
                     <Badge variant={param.required ? "default" : "secondary"}>
                       {param.required ? "Required" : "Optional"}

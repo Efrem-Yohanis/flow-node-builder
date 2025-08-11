@@ -157,12 +157,6 @@ export function ParameterDetailPage() {
                 {parameter.required ? "Required" : "Optional"}
               </Badge>
             </div>
-            <div>
-              <span className="font-medium text-muted-foreground">Associated Node:</span>
-              <Badge variant="outline" className="ml-2">
-                {parameter.node}
-              </Badge>
-            </div>
           </div>
         </CardContent>
       </Card>
