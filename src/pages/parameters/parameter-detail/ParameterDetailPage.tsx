@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,9 +14,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { 
   Edit, 
-  Download,
-  Upload,
-  Copy,
   Play,
   Square
 } from "lucide-react";
@@ -48,7 +45,6 @@ export function ParameterDetailPage() {
   const { data: parameter, loading, error, refetch } = useParameter(id!);
   const [showVersionDialog, setShowVersionDialog] = useState(false);
   const [deploying, setDeploying] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   if (loading) {
@@ -111,65 +107,6 @@ export function ParameterDetailPage() {
     }
   };
 
-  const handleExport = async () => {
-    try {
-      const blob = await parameterService.exportParameter(parameter.id);
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `parameter_${parameter.key}.json`;
-      link.click();
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      toast({
-        title: "Error exporting parameter",
-        description: "Failed to export the parameter. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleImport = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    try {
-      await parameterService.importParameter(file);
-      toast({
-        title: "Parameter imported successfully",
-        description: "The parameter has been imported.",
-      });
-      refetch();
-    } catch (error) {
-      toast({
-        title: "Error importing parameter",
-        description: "Failed to import the parameter. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleClone = async () => {
-    try {
-      const clonedParameter = await parameterService.cloneParameter(parameter.id);
-      toast({
-        title: "Parameter cloned successfully",
-        description: "Redirecting to edit the cloned parameter.",
-      });
-      navigate(`/parameters/${clonedParameter.id}/edit`);
-    } catch (error) {
-      toast({
-        title: "Error cloning parameter",
-        description: "Failed to clone the parameter. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
   return (
     <div className="space-y-6">
       {/* Header Section */}
@@ -223,41 +160,6 @@ export function ParameterDetailPage() {
                 <Play className="h-4 w-4" />
               </Button>
             )}
-
-            <Button 
-              variant="outline" 
-              size="icon" 
-              onClick={handleExport}
-              title="Export JSON"
-            >
-              <Download className="h-4 w-4" />
-            </Button>
-
-            <Button 
-              variant="outline" 
-              size="icon" 
-              onClick={handleImport}
-              title="Import JSON"
-            >
-              <Upload className="h-4 w-4" />
-            </Button>
-
-            <Button 
-              variant="outline" 
-              size="icon" 
-              onClick={handleClone}
-              title="Clone Parameter"
-            >
-              <Copy className="h-4 w-4" />
-            </Button>
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".json"
-              onChange={handleFileChange}
-              style={{ display: 'none' }}
-            />
           </div>
         </div>
         
