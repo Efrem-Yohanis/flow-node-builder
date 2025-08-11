@@ -38,7 +38,7 @@ export function NodeDetailPage() {
         setNode(nodeData);
         
         // Map parameters from node data to match Parameter interface
-        const mappedParameters = (nodeData.parameters || []).map(param => ({
+        const mappedParameters = (nodeData.parameters || []).map((param: any) => ({
           id: param.id,
           key: param.key,
           default_value: param.default_value,
@@ -46,7 +46,8 @@ export function NodeDetailPage() {
           node: nodeData.id,
           required: false, // Default value since not in API
           last_updated_by: null,
-          last_updated_at: nodeData.updated_at
+          last_updated_at: nodeData.updated_at,
+          is_active: false // Default to false since node parameters don't have is_active
         }));
         setNodeParameters(mappedParameters);
         
