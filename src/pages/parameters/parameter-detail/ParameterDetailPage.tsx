@@ -183,6 +183,10 @@ export function ParameterDetailPage() {
               <p className="font-mono">{parameter.default_value}</p>
             </div>
             <div>
+              <span className="font-medium text-muted-foreground">Data Type:</span>
+              <p className="font-mono">{parameter.datatype}</p>
+            </div>
+            <div>
               <span className="font-medium text-muted-foreground">Required:</span>
               <Badge variant={parameter.required ? "default" : "secondary"} className="ml-2">
                 {parameter.required ? "Required" : "Optional"}
