@@ -30,22 +30,28 @@ export function MediationLayout({
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/3">
       <div className="space-y-8 p-8">
-        {/* Header Section */}
-        <div className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/8 via-primary/4 to-transparent rounded-3xl" />
-          <div className="relative bg-card/60 backdrop-blur-xl border border-border/40 rounded-3xl p-10 shadow-elegant">
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-              <div className="space-y-3">
-                <h1 className="text-4xl font-bold text-gradient">
-                  {title}
-                </h1>
-                <p className="text-lg text-muted-foreground max-w-2xl">
-                  {description}
-                </p>
+        {/* Header Section - Hidden when no title/description */}
+        {(title || description) && (
+          <div className="relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/8 via-primary/4 to-transparent rounded-3xl" />
+            <div className="relative bg-card/60 backdrop-blur-xl border border-border/40 rounded-3xl p-10 shadow-elegant">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+                <div className="space-y-3">
+                  {title && (
+                    <h1 className="text-4xl font-bold text-gradient">
+                      {title}
+                    </h1>
+                  )}
+                  {description && (
+                    <p className="text-lg text-muted-foreground max-w-2xl">
+                      {description}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Enterprise Metrics Dashboard */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
