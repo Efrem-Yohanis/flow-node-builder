@@ -108,7 +108,7 @@ export function NodeReportPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'optimal': return 'bg-success text-success-foreground';
-      case 'warning': return 'bg-secondary text-secondary-foreground';
+      case 'warning': return 'bg-warning text-warning-foreground';
       case 'critical': return 'bg-destructive text-destructive-foreground';
       default: return 'bg-muted text-muted-foreground';
     }
@@ -124,9 +124,9 @@ export function NodeReportPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-background via-background to-primary/3 p-8 space-y-8">
-      {/* Professional Summary Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-8 gap-6">
+    <main className="min-h-screen bg-background p-8 space-y-8">
+      {/* Professional Summary Metrics - Reduced to 4 key cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="metric-card hover-scale animate-fade-in">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-primary/10 rounded-2xl shadow-subtle">
@@ -135,7 +135,7 @@ export function NodeReportPage() {
             <div className="space-y-1">
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Nodes</p>
               <p className="text-2xl font-bold text-foreground">{summaryMetrics.totalNodes}</p>
-              <p className="text-xs text-muted-foreground">Systems</p>
+              <p className="text-xs text-muted-foreground">{summaryMetrics.activeNodes} Active</p>
             </div>
           </div>
         </div>
@@ -143,77 +143,38 @@ export function NodeReportPage() {
         <div className="metric-card hover-scale animate-fade-in" style={{ animationDelay: '100ms' }}>
           <div className="flex items-center gap-3">
             <div className="p-3 bg-success/10 rounded-2xl shadow-subtle">
-              <Activity className="h-6 w-6 text-success" />
+              <CheckCircle className="h-6 w-6 text-success" />
             </div>
             <div className="space-y-1">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Active</p>
-              <p className="text-2xl font-bold text-success">{summaryMetrics.activeNodes}</p>
-              <p className="text-xs text-success">Running</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Health Status</p>
+              <p className="text-2xl font-bold text-success">{summaryMetrics.optimalNodes}</p>
+              <p className="text-xs text-muted-foreground">{summaryMetrics.warningNodes} Warning</p>
             </div>
           </div>
         </div>
 
         <div className="metric-card hover-scale animate-fade-in" style={{ animationDelay: '200ms' }}>
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-success/10 rounded-2xl shadow-subtle">
-              <CheckCircle className="h-6 w-6 text-success" />
+            <div className="p-3 bg-info/10 rounded-2xl shadow-subtle">
+              <BarChart3 className="h-6 w-6 text-info" />
             </div>
             <div className="space-y-1">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Optimal</p>
-              <p className="text-2xl font-bold text-success">{summaryMetrics.optimalNodes}</p>
-              <p className="text-xs text-success">Healthy</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Executions</p>
+              <p className="text-2xl font-bold text-foreground">{summaryMetrics.totalExecutions.toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground">Operations</p>
             </div>
           </div>
         </div>
 
         <div className="metric-card hover-scale animate-fade-in" style={{ animationDelay: '300ms' }}>
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-warning/10 rounded-2xl shadow-subtle">
-              <AlertTriangle className="h-6 w-6 text-warning" />
-            </div>
-            <div className="space-y-1">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Warning</p>
-              <p className="text-2xl font-bold text-warning">{summaryMetrics.warningNodes}</p>
-              <p className="text-xs text-warning">Attention</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="metric-card hover-scale animate-fade-in" style={{ animationDelay: '400ms' }}>
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-info/10 rounded-2xl shadow-subtle">
-              <BarChart3 className="h-6 w-6 text-info" />
-            </div>
-            <div className="space-y-1">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Executions</p>
-              <p className="text-2xl font-bold text-foreground">{summaryMetrics.totalExecutions.toLocaleString()}</p>
-              <p className="text-xs text-info">Total</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="metric-card hover-scale animate-fade-in" style={{ animationDelay: '500ms' }}>
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-muted/20 rounded-2xl shadow-subtle">
+            <div className="p-3 bg-muted/10 rounded-2xl shadow-subtle">
               <Cpu className="h-6 w-6 text-muted-foreground" />
             </div>
             <div className="space-y-1">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Avg CPU</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Resource Usage</p>
               <p className="text-2xl font-bold text-foreground">{summaryMetrics.avgCpuUsage}</p>
-              <p className="text-xs text-muted-foreground">Usage</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="metric-card hover-scale animate-fade-in col-span-2" style={{ animationDelay: '600ms' }}>
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-muted/20 rounded-2xl shadow-subtle">
-              <HardDrive className="h-6 w-6 text-muted-foreground" />
-            </div>
-            <div className="space-y-1">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Avg Memory</p>
-              <p className="text-2xl font-bold text-foreground">{summaryMetrics.avgMemoryUsage}</p>
-              <p className="text-xs text-muted-foreground">Memory Usage</p>
+              <p className="text-xs text-muted-foreground">{summaryMetrics.avgMemoryUsage} Memory</p>
             </div>
           </div>
         </div>
