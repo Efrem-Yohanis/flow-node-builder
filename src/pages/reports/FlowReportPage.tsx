@@ -114,7 +114,7 @@ export function FlowReportPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'healthy': return 'bg-success text-success-foreground';
-      case 'warning': return 'bg-secondary text-secondary-foreground';
+      case 'warning': return 'bg-warning text-warning-foreground';
       case 'error': return 'bg-destructive text-destructive-foreground';
       default: return 'bg-muted text-muted-foreground';
     }
@@ -130,18 +130,18 @@ export function FlowReportPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-background via-background to-primary/3 p-8 space-y-8">
-      {/* Professional Summary Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-6 gap-6">
+    <main className="min-h-screen bg-background p-8 space-y-8">
+      {/* Professional Summary Metrics - Reduced to 4 key cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="metric-card hover-scale animate-fade-in">
           <div className="flex items-center gap-4">
             <div className="p-4 bg-primary/10 rounded-2xl shadow-subtle">
               <Activity className="h-7 w-7 text-primary" />
             </div>
             <div className="space-y-1">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Flows</p>
-              <p className="text-3xl font-bold text-foreground">{summaryMetrics.totalFlows}</p>
-              <p className="text-xs text-muted-foreground">Active Systems</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Active Flows</p>
+              <p className="text-3xl font-bold text-foreground">{summaryMetrics.activeFlows}</p>
+              <p className="text-xs text-muted-foreground">of {summaryMetrics.totalFlows} Total</p>
             </div>
           </div>
         </div>
@@ -149,12 +149,12 @@ export function FlowReportPage() {
         <div className="metric-card hover-scale animate-fade-in" style={{ animationDelay: '100ms' }}>
           <div className="flex items-center gap-4">
             <div className="p-4 bg-success/10 rounded-2xl shadow-subtle">
-              <CheckCircle className="h-7 w-7 text-success" />
+              <BarChart3 className="h-7 w-7 text-success" />
             </div>
             <div className="space-y-1">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Active Flows</p>
-              <p className="text-3xl font-bold text-success">{summaryMetrics.activeFlows}</p>
-              <p className="text-xs text-success">Operational</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Success Rate</p>
+              <p className="text-3xl font-bold text-success">{summaryMetrics.avgSuccessRate}%</p>
+              <p className="text-xs text-muted-foreground">Avg Performance</p>
             </div>
           </div>
         </div>
@@ -165,48 +165,22 @@ export function FlowReportPage() {
               <TrendingUp className="h-7 w-7 text-info" />
             </div>
             <div className="space-y-1">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Executions</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Executions</p>
               <p className="text-3xl font-bold text-foreground">{summaryMetrics.totalExecutions.toLocaleString()}</p>
-              <p className="text-xs text-info">Processing Events</p>
+              <p className="text-xs text-muted-foreground">Total Processed</p>
             </div>
           </div>
         </div>
 
         <div className="metric-card hover-scale animate-fade-in" style={{ animationDelay: '300ms' }}>
           <div className="flex items-center gap-4">
-            <div className="p-4 bg-success/10 rounded-2xl shadow-subtle">
-              <BarChart3 className="h-7 w-7 text-success" />
+            <div className="p-4 bg-muted/10 rounded-2xl shadow-subtle">
+              <FileText className="h-7 w-7 text-muted-foreground" />
             </div>
             <div className="space-y-1">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Success Rate</p>
-              <p className="text-3xl font-bold text-success">{summaryMetrics.avgSuccessRate}%</p>
-              <p className="text-xs text-success">Avg Performance</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="metric-card hover-scale animate-fade-in" style={{ animationDelay: '400ms' }}>
-          <div className="flex items-center gap-4">
-            <div className="p-4 bg-info/10 rounded-2xl shadow-subtle">
-              <FileText className="h-7 w-7 text-info" />
-            </div>
-            <div className="space-y-1">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Data Processed</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Data Volume</p>
               <p className="text-3xl font-bold text-foreground">{summaryMetrics.totalDataProcessed}</p>
-              <p className="text-xs text-info">Total Volume</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="metric-card hover-scale animate-fade-in" style={{ animationDelay: '500ms' }}>
-          <div className="flex items-center gap-4">
-            <div className="p-4 bg-muted/20 rounded-2xl shadow-subtle">
-              <Clock className="h-7 w-7 text-muted-foreground" />
-            </div>
-            <div className="space-y-1">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Avg Time</p>
-              <p className="text-3xl font-bold text-foreground">{summaryMetrics.avgExecutionTime}</p>
-              <p className="text-xs text-muted-foreground">Per Execution</p>
+              <p className="text-xs text-muted-foreground">{summaryMetrics.avgExecutionTime} Avg Time</p>
             </div>
           </div>
         </div>
