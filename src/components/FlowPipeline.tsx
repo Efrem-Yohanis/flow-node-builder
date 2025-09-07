@@ -22,15 +22,16 @@ interface FlowPipelineProps {
     name: string;
     type: string;
     status: string;
-    scheduling: string;
-    processed: number;
-    errors: number;
-    host: string;
-    position: { x: number; y: number };
+    scheduling?: string;
+    processed?: number;
+    errors?: number;
+    host?: string;
+    position?: { x: number; y: number };
+    subnodeName?: string;
   }>;
 }
 
-// Custom node component
+// Custom simplified node component for stream detail view
 const CustomNode = ({ data }: { data: any }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -42,39 +43,16 @@ const CustomNode = ({ data }: { data: any }) => {
   };
 
   return (
-    <div className="px-4 py-3 shadow-lg rounded-lg bg-card border-2 border-border min-w-[200px]">
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <div className="font-semibold text-sm">{data.name}</div>
-          <Badge className={`text-xs ${getStatusColor(data.status)}`}>
-            {data.status}
-          </Badge>
-        </div>
+    <div className="px-3 py-2 shadow-md rounded-lg bg-card border-2 border-border min-w-[160px]">
+      <div className="flex flex-col gap-1">
+        <div className="font-semibold text-sm">{data.name}</div>
+        
+        <Badge className={`text-xs w-fit ${getStatusColor(data.status)}`}>
+          {data.status}
+        </Badge>
         
         <div className="text-xs text-muted-foreground">
-          {data.type}
-        </div>
-        
-        <div className="text-xs text-muted-foreground">
-          {data.scheduling}
-        </div>
-        
-        <div className="flex justify-between text-xs">
-          <span className="text-muted-foreground">
-            Processed: <span className="text-foreground font-medium">{data.processed.toLocaleString()}</span>
-          </span>
-        </div>
-        
-        <div className="flex justify-between text-xs">
-          <span className="text-muted-foreground">
-            Errors: <span className={`font-medium ${data.errors > 0 ? 'text-destructive' : 'text-success'}`}>
-              {data.errors}
-            </span>
-          </span>
-        </div>
-        
-        <div className="text-xs text-muted-foreground border-t pt-1">
-          Host: {data.host}
+          {data.subnodeName || "No subnode"}
         </div>
       </div>
     </div>
@@ -99,6 +77,7 @@ export function FlowPipeline({ nodesData }: FlowPipelineProps) {
       processed: node.processed,
       errors: node.errors,
       host: node.host,
+      subnodeName: node.subnodeName,
     },
   }));
 
