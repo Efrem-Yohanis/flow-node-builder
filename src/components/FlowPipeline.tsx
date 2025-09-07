@@ -12,6 +12,8 @@ import {
   type Node,
   BackgroundVariant,
   MarkerType,
+  Handle,
+  Position,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { Badge } from '@/components/ui/badge';
@@ -43,7 +45,14 @@ const CustomNode = ({ data }: { data: any }) => {
   };
 
   return (
-    <div className="px-3 py-2 shadow-md rounded-lg bg-card border-2 border-border min-w-[160px]">
+    <div className="px-3 py-2 shadow-md rounded-lg bg-card border-2 border-border min-w-[160px] relative">
+      {/* Input Handle */}
+      <Handle 
+        type="target" 
+        position={Position.Left} 
+        className="!bg-primary !border-primary !w-3 !h-3 !-left-1.5"
+      />
+      
       <div className="flex flex-col gap-1">
         <div className="font-semibold text-sm">{data.name}</div>
         
@@ -55,6 +64,13 @@ const CustomNode = ({ data }: { data: any }) => {
           {data.subnodeName || "No subnode"}
         </div>
       </div>
+      
+      {/* Output Handle */}
+      <Handle 
+        type="source" 
+        position={Position.Right} 
+        className="!bg-primary !border-primary !w-3 !h-3 !-right-1.5"
+      />
     </div>
   );
 };
@@ -64,11 +80,11 @@ const nodeTypes = {
 };
 
 export function FlowPipeline({ nodesData }: FlowPipelineProps) {
-  // Convert mock data to React Flow format
+  // Convert mock data to React Flow format with better spacing
   const initialNodes: Node[] = nodesData.map((node, index) => ({
     id: node.id,
     type: 'custom',
-    position: { x: index * 280 + 50, y: 100 },
+    position: { x: index * 250, y: 100 },
     data: {
       name: node.name,
       type: node.type,
@@ -116,7 +132,15 @@ export function FlowPipeline({ nodesData }: FlowPipelineProps) {
         onConnect={onConnect}
         nodeTypes={nodeTypes}
         fitView
+        fitViewOptions={{
+          padding: 0.1,
+          minZoom: 0.5,
+          maxZoom: 1.5,
+        }}
         className="bg-background"
+        nodesDraggable={false}
+        nodesConnectable={false}
+        elementsSelectable={false}
       >
         <Controls className="bg-card border border-border" />
         <MiniMap 
