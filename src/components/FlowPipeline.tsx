@@ -46,11 +46,11 @@ const CustomNode = ({ data }: { data: any }) => {
 
   return (
     <div className="px-3 py-2 shadow-md rounded-lg bg-card border-2 border-border min-w-[160px] relative">
-      {/* Input Handle */}
+      {/* Hidden handles for connections - not visible but enable connectivity */}
       <Handle 
         type="target" 
         position={Position.Left} 
-        className="!bg-primary !border-primary !w-3 !h-3 !-left-1.5"
+        className="!opacity-0 !bg-transparent !border-transparent !w-1 !h-1"
       />
       
       <div className="flex flex-col gap-1">
@@ -65,11 +65,11 @@ const CustomNode = ({ data }: { data: any }) => {
         </div>
       </div>
       
-      {/* Output Handle */}
+      {/* Hidden handles for connections - not visible but enable connectivity */}
       <Handle 
         type="source" 
         position={Position.Right} 
-        className="!bg-primary !border-primary !w-3 !h-3 !-right-1.5"
+        className="!opacity-0 !bg-transparent !border-transparent !w-1 !h-1"
       />
     </div>
   );
@@ -97,20 +97,22 @@ export function FlowPipeline({ nodesData }: FlowPipelineProps) {
     },
   }));
 
-  // Create edges to connect nodes in sequence
+  // Create flexible curved edges to connect nodes in sequence
   const initialEdges: Edge[] = nodesData.slice(0, -1).map((node, index) => ({
     id: `e${node.id}-${nodesData[index + 1].id}`,
     source: node.id,
     target: nodesData[index + 1].id,
-    type: 'smoothstep',
+    type: 'bezier', // Use bezier curves for flexible connections
     animated: true,
     style: {
       stroke: 'hsl(var(--primary))',
-      strokeWidth: 2,
+      strokeWidth: 3,
     },
     markerEnd: {
       type: MarkerType.ArrowClosed,
       color: 'hsl(var(--primary))',
+      width: 20,
+      height: 20,
     },
   }));
 
