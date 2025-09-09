@@ -116,14 +116,13 @@ export function RealTimeFlowEditor({ flowId }: RealTimeFlowEditorProps) {
           }
         }
         
-        // Convert API edges to React Flow edges with bezier style (matching /streams/ncc-002)
+        // Convert API edges to React Flow edges with smoothstep style (matching /streams pages)
         const canvasEdges: Edge[] = graphData.edges.map(apiEdge => ({
           id: apiEdge.id,
           source: `canvas-${apiEdge.from_node}`,
           target: `canvas-${apiEdge.to_node}`,
-          type: 'bezier',
-          style: { strokeWidth: 2, stroke: 'hsl(var(--primary))' },
-          markerEnd: 'arrowclosed',
+          type: 'smoothstep',
+          animated: true,
         }));
         
         setNodes(canvasNodes);
@@ -236,14 +235,13 @@ export function RealTimeFlowEditor({ flowId }: RealTimeFlowEditorProps) {
       
       if (!params.source || !params.target) return;
 
-      // Optimistically update UI first with bezier style
+      // Optimistically update UI first with smoothstep style
       const newEdge = {
         id: `temp-${Date.now()}`,
         source: params.source,
         target: params.target,
-        type: 'bezier',
-        style: { strokeWidth: 2, stroke: 'hsl(var(--primary))' },
-        markerEnd: 'arrowclosed',
+        type: 'smoothstep',
+        animated: true,
       };
       setEdges((eds) => [...eds, newEdge]);
       
@@ -270,9 +268,8 @@ export function RealTimeFlowEditor({ flowId }: RealTimeFlowEditorProps) {
           e.id === newEdge.id ? { 
             ...e, 
             id: edge.id,
-            type: 'bezier',
-            style: { strokeWidth: 2, stroke: 'hsl(var(--primary))' },
-            markerEnd: 'arrowclosed',
+            type: 'smoothstep',
+            animated: true,
           } : e
         ));
 

@@ -85,16 +85,16 @@ export const EnhancedFlowNode = memo(({ data, selected, id }: EnhancedFlowNodePr
         transition-all duration-200 hover:shadow-xl
       `}
     >
-      {/* Invisible connection handles - styled to match /streams/ncc-002 */}
+      {/* Visible connection handles */}
       <Handle 
         type="target" 
         position={Position.Left} 
-        className="opacity-0 !w-4 !h-4"
+        className="!bg-primary !border-primary !w-3 !h-3 !border-2 !border-background"
       />
       <Handle 
         type="source" 
         position={Position.Right} 
-        className="opacity-0 !w-4 !h-4"
+        className="!bg-primary !border-primary !w-3 !h-3 !border-2 !border-background"
       />
 
       <div className="space-y-3">
