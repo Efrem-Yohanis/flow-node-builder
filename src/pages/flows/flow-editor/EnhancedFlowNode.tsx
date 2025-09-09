@@ -120,14 +120,14 @@ export const EnhancedFlowNode = memo(({ data, selected, id }: EnhancedFlowNodePr
         <div className="space-y-2">
           <div className="text-xs text-muted-foreground font-medium">Subnode</div>
           <Select 
-            value={data.selectedSubnode || ""} 
-            onValueChange={handleSubnodeChange}
+            value={data.selectedSubnode || "none"} 
+            onValueChange={(value) => handleSubnodeChange(value === "none" ? "" : value)}
           >
             <SelectTrigger className="w-full text-xs h-8">
               <SelectValue placeholder="Select subnode" />
             </SelectTrigger>
             <SelectContent className="z-50">
-              <SelectItem value="" className="text-xs">
+              <SelectItem value="none" className="text-xs">
                 No subnode selected
               </SelectItem>
               {data.subnodes?.map((subnode) => (
