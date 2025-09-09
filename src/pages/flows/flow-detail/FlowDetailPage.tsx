@@ -530,16 +530,34 @@ export function FlowDetailPage() {
                                 {node.subnodeName}
                               </code>
                             </td>
-                            <td className="p-4">
-                              <div className="flex gap-1">
-                                <Button size="sm" variant="outline" title="Configure">
-                                  <Settings className="h-3 w-3" />
-                                </Button>
-                                <Button size="sm" variant="outline" title="View Details">
-                                  <Eye className="h-3 w-3" />
-                                </Button>
-                              </div>
-                            </td>
+                             <td className="p-4">
+                               <div className="flex gap-1">
+                                 <Button 
+                                   size="sm" 
+                                   variant="outline"
+                                   onClick={() => toast({ title: "Node Started", description: `${node.name} has been started.` })}
+                                   title="Start"
+                                 >
+                                   <Play className="h-3 w-3" />
+                                 </Button>
+                                 <Button 
+                                   size="sm" 
+                                   variant="outline"
+                                   onClick={() => toast({ title: "Node Stopped", description: `${node.name} has been stopped.` })}
+                                   title="Stop"
+                                 >
+                                   <Square className="h-3 w-3" />
+                                 </Button>
+                                 <Button 
+                                   size="sm" 
+                                   variant="outline"
+                                   onClick={() => toast({ title: "Node Restarted", description: `${node.name} has been restarted.` })}
+                                   title="Restart"
+                                 >
+                                   <RotateCcw className="h-3 w-3" />
+                                 </Button>
+                               </div>
+                             </td>
                           </tr>
                         ))}
                       </tbody>
