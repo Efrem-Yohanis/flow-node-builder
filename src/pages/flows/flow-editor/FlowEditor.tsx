@@ -40,10 +40,11 @@ interface NodeData extends Record<string, unknown> {
 interface SimplifiedNodeProps {
   data: NodeData;
   id: string;
+  onSubnodeChange?: (nodeId: string, subnodeId: string) => void;
 }
 
 // Simplified node component
-const SimplifiedNode = ({ data, id }: SimplifiedNodeProps) => {
+const SimplifiedNode = ({ data, id, onSubnodeChange }: SimplifiedNodeProps) => {
   const [subnodes, setSubnodes] = useState<Array<{ id: string; name: string }>>([]);
   const [loading, setLoading] = useState(false);
 
@@ -97,8 +98,9 @@ const SimplifiedNode = ({ data, id }: SimplifiedNodeProps) => {
             <Select
               value={data.selectedSubnode || ""}
               onValueChange={(value) => {
-                // This would trigger an update in the parent component
-                console.log('Subnode selected:', value);
+                if (onSubnodeChange) {
+                  onSubnodeChange(id, value);
+                }
               }}
             >
               <SelectTrigger className="h-8 text-xs">
@@ -137,6 +139,30 @@ export function FlowEditor() {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [flowNodeMap, setFlowNodeMap] = useState<Map<string, string>>(new Map());
 
+  // Handle subnode selection change
+  const handleSubnodeChange = useCallback((nodeId: string, subnodeId: string) => {
+    setNodes((nodes) =>
+      nodes.map((node) =>
+        node.id === nodeId
+          ? { ...node, data: { ...node.data, selectedSubnode: subnodeId } }
+          : node
+      )
+    );
+    
+    // Update via API if we have a flow node mapping
+    const flowNodeId = flowNodeMap.get(nodeId);
+    if (flowNodeId && flowId) {
+      flowService.setFlowNodeSubnode(flowNodeId, subnodeId)
+        .then(() => {
+          toast.success('Subnode updated successfully');
+        })
+        .catch((error) => {
+          console.error('Error updating subnode:', error);
+          toast.error('Failed to update subnode');
+        });
+    }
+  }, [setNodes, flowNodeMap, flowId]);
+
   // Update flow data when loaded from API
   useEffect(() => {
     if (flowData && flowId) {
@@ -150,10 +176,11 @@ export function FlowEditor() {
     async (params: Connection) => {
       console.log('🔗 Connecting nodes:', params);
       
-      // Add edge with same styling as FlowPipeline
-      const newEdge = {
+      // Add edge with same styling as FlowPipeline - flexible bezier curves
+      const newEdge: Edge = {
+        id: `e${params.source}-${params.target}`,
         ...params,
-        type: 'bezier', // Use bezier curves for flexible connections
+        type: 'bezier', // Flexible curved connections like streams page
         animated: true,
         style: {
           stroke: 'hsl(var(--primary))',
@@ -297,9 +324,25 @@ export function FlowEditor() {
     }
   };
 
+  // Default edge options for flexible bezier curves
+  const defaultEdgeOptions = {
+    type: 'bezier',
+    animated: true,
+    style: {
+      stroke: 'hsl(var(--primary))',
+      strokeWidth: 3,
+    },
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      color: 'hsl(var(--primary))',
+      width: 20,
+      height: 20,
+    },
+  };
+
   const nodeTypes = useMemo(() => ({
-    simplified: SimplifiedNode,
-  }), []);
+    simplified: (props: any) => <SimplifiedNode {...props} onSubnodeChange={handleSubnodeChange} />,
+  }), [handleSubnodeChange]);
 
   if (flowLoading) {
     return (
@@ -321,9 +364,12 @@ export function FlowEditor() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Flows
           </Button>
-          <h1 className="text-xl font-semibold">
-            {flowData?.name || 'Flow Editor'}
-          </h1>
+          <div className="flex flex-col">
+            <h1 className="text-xl font-semibold">
+              {flowData?.name || 'Flow Editor'}
+            </h1>
+            <p className="text-sm text-muted-foreground">v1.0 Editing Mode</p>
+          </div>
         </div>
         
         <Button onClick={saveFlow} className="flex items-center gap-2">
@@ -377,6 +423,7 @@ export function FlowEditor() {
             onDrop={onDrop}
             onDragOver={onDragOver}
             nodeTypes={nodeTypes}
+            defaultEdgeOptions={defaultEdgeOptions}
             fitView
             className="bg-background"
           >

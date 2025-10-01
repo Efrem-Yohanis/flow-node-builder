@@ -72,15 +72,16 @@ export const EnhancedFlowNode = memo(({ data, selected, id }: EnhancedFlowNodePr
   const nodeStatus = "Active"; // This could be "Active" or "Drafted"
   
   const handleSubnodeChange = (subnodeId: string) => {
+    const key = data.flowNodeId || id;
     if (data.onSubnodeChange) {
-      data.onSubnodeChange(id, subnodeId);
+      data.onSubnodeChange(key, subnodeId);
     }
   };
 
   return (
     <div 
       className={`
-        bg-card border-2 rounded-lg p-4 min-w-[250px] shadow-lg relative
+        bg-card border-2 rounded-lg p-5 min-w-[320px] shadow-lg relative
         ${selected ? 'border-primary shadow-primary/20' : 'border-border'}
         transition-all duration-200 hover:shadow-xl
       `}
@@ -97,14 +98,14 @@ export const EnhancedFlowNode = memo(({ data, selected, id }: EnhancedFlowNodePr
         className="!bg-primary !border-primary !w-3 !h-3 !border-2 !border-background"
       />
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         {/* Node Header */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className={`w-6 h-6 rounded ${colorClass} flex items-center justify-center`}>
-              <Icon className="w-3 h-3 text-white" />
+          <div className="flex items-center gap-3">
+            <div className={`w-8 h-8 rounded-lg ${colorClass} flex items-center justify-center`}>
+              <Icon className="w-4 h-4 text-white" />
             </div>
-            <h3 className="font-semibold text-sm text-foreground">{data.label}</h3>
+            <h3 className="font-semibold text-base text-foreground">{data.label}</h3>
           </div>
           
           {/* Node Status Badge */}
@@ -117,21 +118,21 @@ export const EnhancedFlowNode = memo(({ data, selected, id }: EnhancedFlowNodePr
         </div>
 
         {/* Subnode Selection Dropdown */}
-        <div className="space-y-2">
-          <div className="text-xs text-muted-foreground font-medium">Subnode</div>
+        <div className="space-y-3">
+          <div className="text-sm text-muted-foreground font-medium">Subnode</div>
           <Select 
             value={data.selectedSubnode || "none"} 
             onValueChange={(value) => handleSubnodeChange(value === "none" ? "" : value)}
           >
-            <SelectTrigger className="w-full text-xs h-8">
+            <SelectTrigger className="w-full text-sm h-10">
               <SelectValue placeholder="Select subnode" />
             </SelectTrigger>
-            <SelectContent className="z-50">
-              <SelectItem value="none" className="text-xs">
+            <SelectContent className="z-[9999] bg-popover border border-border shadow-xl backdrop-blur-sm">
+              <SelectItem value="none" className="text-sm">
                 No subnode selected
               </SelectItem>
               {data.subnodes?.map((subnode) => (
-                <SelectItem key={subnode.id} value={subnode.id} className="text-xs">
+                <SelectItem key={subnode.id} value={subnode.id} className="text-sm">
                   {subnode.name}
                 </SelectItem>
               ))}
@@ -140,11 +141,14 @@ export const EnhancedFlowNode = memo(({ data, selected, id }: EnhancedFlowNodePr
         </div>
 
         {/* Selected Subnode Display */}
-        {data.selectedSubnode && data.subnodes && (
-          <div className="pt-2 border-t border-border">
-            <div className="text-xs text-muted-foreground">Selected:</div>
-            <div className="text-xs font-medium text-foreground">
-              {data.subnodes.find(s => s.id === data.selectedSubnode)?.name || data.selectedSubnode}
+        {data.selectedSubnode && data.selectedSubnode !== "none" && data.subnodes && (
+          <div className="pt-3 border-t border-border">
+            <div className="text-sm text-muted-foreground mb-1">Active Subnode:</div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-success rounded-full animate-pulse"></div>
+              <div className="text-sm font-semibold text-foreground">
+                {data.subnodes.find(s => s.id === data.selectedSubnode)?.name || data.selectedSubnode}
+              </div>
             </div>
           </div>
         )}

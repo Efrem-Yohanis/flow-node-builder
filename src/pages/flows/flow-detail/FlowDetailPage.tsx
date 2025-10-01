@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { LoadingCard } from "@/components/ui/loading";
 import { FlowPipeline } from "@/components/FlowPipeline";
+import { UniformDetailHeader } from "@/components/UniformDetailHeader";
+import { UniformDetailBackButton } from "@/components/UniformDetailBackButton";
 import { 
   ArrowLeft,
   Play, 
@@ -64,9 +66,9 @@ export function FlowDetailPage() {
   useEffect(() => {
     const fetchFlowStructure = async () => {
       try {
-        const response = await flowService.getFlowGraph(id!);
+        const response = await flowService.getFlow(id!);
         setFlow(response);
-        setDescription((response as any)?.description || "No description available");
+        setDescription(response?.description || "No description available");
       } catch (err) {
         setError("Error fetching flow structure");
         console.error(err);
@@ -178,150 +180,69 @@ export function FlowDetailPage() {
   };
 
   const flowStatus = flow.is_running ? "RUNNING" : "STOPPED";
+  
+  const getFlowStatusForBreadcrumb = () => {
+    if (flow.is_deployed) return "Deployed";
+    return "Draft";
+  };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="border-b border-border bg-card/50 backdrop-blur-sm">
-        <div className="px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate("/dashboard")}
-                className="gap-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back to Dashboard
-              </Button>
-              
-              <div className="space-y-1">
-                <div className="text-xs text-muted-foreground">
-                  Dashboard → Flows → {flow.name}
-                </div>
-                <div className="flex items-center gap-3">
-                  <h1 className="text-2xl font-bold text-foreground">
-                    {flow.name}
-                  </h1>
-                  <Badge variant="outline" className="text-xs">
-                    v{flow.version}
-                  </Badge>
-                </div>
-              </div>
-            </div>
+    <div className="space-y-6 p-6">
+        {/* Uniform Header */}
+        <UniformDetailHeader
+          name={flow.name}
+          version={flow.version}
+          status={flow.is_running ? 'running' : flow.is_deployed ? 'deployed' : 'draft'}
+          backRoute="/devtool"
+          backTab="flows"
+          isEditable={!flow.is_deployed}
+          onEditVersion={() => navigate(`/flows/${id}/edit`)}
+          onCreateNewVersion={() => toast({ title: "Create New Version", description: "Creating new version..." })}
+          onToggleDeployment={() => {
+            setFlow(prev => ({ ...prev, is_deployed: !prev.is_deployed }));
+            toast({
+              title: flow.is_deployed ? "Flow Undeployed" : "Flow Deployed",
+              description: flow.is_deployed ? "Flow has been undeployed" : "Flow has been deployed successfully"
+            });
+          }}
+          onShowVersionHistory={() => toast({ title: "Version History", description: "Opening version history..." })}
+          onExportVersion={() => toast({ title: "Export Version", description: "Exporting version..." })}
+          onCloneVersion={() => toast({ title: "Clone Version", description: "Cloning version..." })}
+          onDeleteVersion={() => toast({ title: "Delete Version", description: "Deleting version..." })}
+          customActions={[
+            {
+              label: "Edit Flow",
+              icon: Edit,
+              onClick: () => navigate(`/flows/${id}/edit`)
+            },
+            {
+              label: "Start Flow",
+              icon: Play,
+              onClick: handleRunFlow,
+              disabled: flow.is_running
+            },
+            {
+              label: "Stop Flow", 
+              icon: Pause,
+              onClick: handleStopFlow,
+              disabled: !flow.is_running
+            },
+            {
+              label: "Restart Flow",
+              icon: RotateCcw,
+              onClick: () => {
+                if (flow.is_running) {
+                  handleStopFlow();
+                  setTimeout(() => handleRunFlow(), 1000);
+                } else {
+                  handleRunFlow();
+                }
+              }
+            }
+          ]}
+        />
 
-            <div className="flex items-center gap-2">
-              {/* Edit/Create New Version Button */}
-              {flow.is_deployed ? (
-                <Button 
-                  variant="outline"
-                  size="icon"
-                  title="Create New Version"
-                  onClick={() => toast({ title: "Create New Version", description: "Creating new version..." })}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              ) : (
-                <Button 
-                  variant="outline"
-                  size="icon"
-                  title="Edit Version"
-                  onClick={() => navigate(`/flows/${id}/edit`)}
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-              )}
-              
-              {/* Deploy/Undeploy Button */}
-              <Button 
-                variant={flow.is_deployed ? "destructive" : "default"}
-                size="icon"
-                title={flow.is_deployed ? "Undeploy" : "Deploy"}
-                onClick={() => {
-                  setFlow(prev => ({ ...prev, is_deployed: !prev.is_deployed }));
-                  toast({
-                    title: flow.is_deployed ? "Flow Undeployed" : "Flow Deployed",
-                    description: flow.is_deployed ? "Flow has been undeployed" : "Flow has been deployed successfully"
-                  });
-                }}
-              >
-                {flow.is_deployed ? (
-                  <Square className="h-4 w-4" />
-                ) : (
-                  <Play className="h-4 w-4" />
-                )}
-              </Button>
-              
-              {/* Version History Button */}
-              <Button 
-                variant="outline" 
-                size="icon"
-                title="Version History"
-                onClick={() => toast({ title: "Version History", description: "Opening version history..." })}
-              >
-                <History className="h-4 w-4" />
-              </Button>
-
-              {/* Three Dots Menu with Flow Controls */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="outline" 
-                    size="icon"
-                    title="More Actions"
-                  >
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {!flow.is_running && (
-                    <DropdownMenuItem onClick={handleRunFlow}>
-                      <Play className="h-4 w-4 mr-2" />
-                      Start Flow
-                    </DropdownMenuItem>
-                  )}
-                  {flow.is_running && (
-                    <DropdownMenuItem onClick={handleStopFlow}>
-                      <Pause className="h-4 w-4 mr-2" />
-                      Stop Flow
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuItem onClick={() => {
-                    if (flow.is_running) {
-                      handleStopFlow();
-                      setTimeout(() => handleRunFlow(), 1000);
-                    } else {
-                      handleRunFlow();
-                    }
-                  }}>
-                    <RotateCcw className="h-4 w-4 mr-2" />
-                    Restart Flow
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => toast({ title: "Export Version", description: "Exporting version..." })}>
-                    <Download className="h-4 w-4 mr-2" />
-                    Export Version
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => toast({ title: "Clone Version", description: "Cloning version..." })}>
-                    <Copy className="h-4 w-4 mr-2" />
-                    Clone Version
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    onClick={() => toast({ title: "Delete Version", description: "Deleting version..." })}
-                    disabled={flow.is_deployed}
-                    className="text-destructive focus:text-destructive"
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Delete Version
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="p-6 space-y-6">
+        <div className="space-y-6">
         {/* General Info Panel */}
         <Card>
           <CardHeader>
@@ -468,50 +389,54 @@ export function FlowDetailPage() {
             {viewMode === "graph" ? (
               <FlowPipeline nodesData={nodesData} />
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Node Name</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Scheduling</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Processed</TableHead>
-                    <TableHead>Errors</TableHead>
-                    <TableHead>Host</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {nodesData.map((node) => (
-                    <TableRow key={node.id}>
-                      <TableCell className="font-medium">{node.name}</TableCell>
-                      <TableCell>{node.type}</TableCell>
-                      <TableCell>{node.scheduling}</TableCell>
-                      <TableCell>
-                        <Badge className={getStatusColor(node.status)}>
-                          {node.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{node.processed.toLocaleString()}</TableCell>
-                      <TableCell>{node.errors}</TableCell>
-                      <TableCell>{node.host}</TableCell>
-                      <TableCell>
-                        <div className="flex gap-1">
-                          <Button size="sm" variant="outline" className="h-8 w-8 p-0">
-                            <Play className="h-3 w-3" />
-                          </Button>
-                          <Button size="sm" variant="outline" className="h-8 w-8 p-0">
-                            <Pause className="h-3 w-3" />
-                          </Button>
-                          <Button size="sm" variant="outline" className="h-8 w-8 p-0">
-                            <RotateCcw className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </TableCell>
+              <div className="overflow-hidden border border-border rounded-lg bg-card">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-b border-border bg-muted/30">
+                      <TableHead className="h-12 px-6 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Node Name</TableHead>
+                      <TableHead className="h-12 px-6 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Type</TableHead>
+                      <TableHead className="h-12 px-6 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Scheduling</TableHead>
+                      <TableHead className="h-12 px-6 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Status</TableHead>
+                      <TableHead className="h-12 px-6 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Processed</TableHead>
+                      <TableHead className="h-12 px-6 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Errors</TableHead>
+                      <TableHead className="h-12 px-6 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Host</TableHead>
+                      <TableHead className="h-12 px-6 text-xs font-semibold text-muted-foreground uppercase tracking-wider text-right">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {nodesData.map((node) => (
+                      <TableRow key={node.id} className="hover:bg-muted/30 transition-colors">
+                        <TableCell className="px-6 py-4">
+                          <div className="font-medium text-foreground">{node.name}</div>
+                        </TableCell>
+                        <TableCell className="px-6 py-4 text-sm text-muted-foreground">{node.type}</TableCell>
+                        <TableCell className="px-6 py-4 text-sm text-muted-foreground">{node.scheduling}</TableCell>
+                        <TableCell className="px-6 py-4">
+                          <Badge className={getStatusColor(node.status)}>
+                            {node.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="px-6 py-4 text-sm text-muted-foreground">{node.processed.toLocaleString()}</TableCell>
+                        <TableCell className="px-6 py-4 text-sm text-muted-foreground">{node.errors}</TableCell>
+                        <TableCell className="px-6 py-4 text-sm text-muted-foreground">{node.host}</TableCell>
+                        <TableCell className="px-6 py-4">
+                          <div className="flex items-center justify-end gap-1">
+                            <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                              <Play className="h-3 w-3" />
+                            </Button>
+                            <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                              <Pause className="h-3 w-3" />
+                            </Button>
+                            <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                              <RotateCcw className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -707,6 +632,11 @@ export function FlowDetailPage() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Back Button */}
+        <div className="flex justify-end pt-6">
+          <UniformDetailBackButton backRoute="/devtool" backTab="flows" />
+        </div>
       </div>
     </div>
   );
