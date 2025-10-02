@@ -26,6 +26,8 @@ import { CreateParameterPage } from "@/pages/parameters/create-parameter/CreateP
 import { EditParameterPage } from "@/pages/parameters/edit-parameter/EditParameterPage";
 import { DevToolPage } from "@/pages/DevToolPage";
 import { StreamDetailPage } from "@/pages/StreamDetailPage";
+import { DataMonitoringPage } from "@/pages/DataMonitoringPage";
+import { NetworkModelPage } from "@/pages/NetworkModelPage";
 import { ChargingMediationPage } from "@/pages/mediations/ChargingMediationPage";
 import { ConvergentMediationPage } from "@/pages/mediations/ConvergentMediationPage";
 import { NCCMediationPage } from "@/pages/mediations/NCCMediationPage";
@@ -57,6 +59,8 @@ const App = () => (
                 <Route path="/" element={<DashboardPage />} />
                 <Route path="/streams" element={<StreamsPage />} />
                 <Route path="/streams/:streamId" element={<StreamDetailPage />} />
+                <Route path="/data-monitoring" element={<DataMonitoringPage />} />
+                <Route path="/network-model" element={<NetworkModelPage />} />
                 <Route path="/alerts" element={<AlertsPage />} />
                 <Route path="/reports" element={<ReportsPage />} />
                 <Route path="/devtool" element={<DevToolPage />} />

@@ -17,6 +17,8 @@ export function TopNavbar() {
   const navItems = [
     { title: "Dashboard", path: "/" },
     { title: "Streams", path: "/streams" },
+    { title: "Data Monitoring", path: "/data-monitoring" },
+    { title: "Network Model", path: "/network-model" },
     { title: "Alerts", path: "/alerts" },
     { title: "Reports", path: "/reports" },
     { title: "DevTool", path: "/devtool" },
