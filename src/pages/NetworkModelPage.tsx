@@ -5,31 +5,38 @@ import { OutgoingConnectionPointsTab } from "./network-model/OutgoingConnectionP
 
 export function NetworkModelPage() {
   return (
-    <div className="container mx-auto p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">Network Model</h1>
-        <p className="text-muted-foreground mt-2">Manage and monitor all connection points</p>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-muted/20">
+      {/* Header Section */}
+      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="p-6">
+          <div className="flex flex-col space-y-2">
+            <h1 className="text-3xl font-bold tracking-tight">Network Model</h1>
+            <p className="text-muted-foreground">Manage and monitor all connection points</p>
+          </div>
+        </div>
       </div>
 
-      <Tabs defaultValue="all" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-6">
-          <TabsTrigger value="all">All Connection Points</TabsTrigger>
-          <TabsTrigger value="incoming">Incoming Connection Points</TabsTrigger>
-          <TabsTrigger value="outgoing">Outgoing Connection Points</TabsTrigger>
-        </TabsList>
+      <div className="p-6">
+        <Tabs defaultValue="all" className="w-full">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsTrigger value="all">All Connection Points</TabsTrigger>
+            <TabsTrigger value="incoming">Incoming Connection Points</TabsTrigger>
+            <TabsTrigger value="outgoing">Outgoing Connection Points</TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="all">
-          <AllConnectionPointsTab />
-        </TabsContent>
+          <TabsContent value="all">
+            <AllConnectionPointsTab />
+          </TabsContent>
 
-        <TabsContent value="incoming">
-          <IncomingConnectionPointsTab />
-        </TabsContent>
+          <TabsContent value="incoming">
+            <IncomingConnectionPointsTab />
+          </TabsContent>
 
-        <TabsContent value="outgoing">
-          <OutgoingConnectionPointsTab />
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="outgoing">
+            <OutgoingConnectionPointsTab />
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 }
