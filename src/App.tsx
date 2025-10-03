@@ -33,6 +33,7 @@ import { ConvergentMediationPage } from "@/pages/mediations/ConvergentMediationP
 import { NCCMediationPage } from "@/pages/mediations/NCCMediationPage";
 import { TopicDetailPage } from "@/pages/mediations/components/TopicDetailPage";
 import { ConfigDetailPage } from "@/pages/mediations/components/ConfigDetailPage";
+import { ConfigDetailPage as DevToolConfigDetailPage } from "@/pages/devtool/ConfigDetailPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -64,6 +65,7 @@ const App = () => (
                 <Route path="/alerts" element={<AlertsPage />} />
                 <Route path="/reports" element={<ReportsPage />} />
                 <Route path="/devtool" element={<DevToolPage />} />
+                <Route path="/devtool/config/:configType" element={<DevToolConfigDetailPage />} />
                 
                 {/* Flow routes */}
                 <Route path="/flows/:id" element={<FlowDetailPage />} />
