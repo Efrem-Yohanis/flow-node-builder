@@ -1,15 +1,11 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Plus,
   Search,
@@ -20,11 +16,6 @@ import {
   ExternalLink,
   Activity,
   AlertCircle,
-  Users,
-  BarChart3,
-  Network,
-  Clock,
-  Zap,
   Database,
   CheckCircle2,
   XCircle,
@@ -92,13 +83,12 @@ const mockKafkaTopics = [
 
 export function EventManagementPage() {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [topics, setTopics] = useState(mockKafkaTopics);
   const [filteredTopics, setFilteredTopics] = useState(mockKafkaTopics);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [flowFilter, setFlowFilter] = useState("all");
-  const [selectedTopic, setSelectedTopic] = useState<any>(null);
-  const [showTopicDetail, setShowTopicDetail] = useState(false);
 
   // Filter topics based on search and filters
   useEffect(() => {
@@ -121,9 +111,8 @@ export function EventManagementPage() {
     setFilteredTopics(filtered);
   }, [topics, searchTerm, statusFilter, flowFilter]);
 
-  const handleViewDetails = (topic: any) => {
-    setSelectedTopic(topic);
-    setShowTopicDetail(true);
+  const handleViewDetails = (topicId: string) => {
+    navigate(`/devtool/topics/${topicId}`);
   };
 
   const handleRetryCreate = async (topicId: string) => {
@@ -432,7 +421,7 @@ export function EventManagementPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleViewDetails(topic)}
+                        onClick={() => handleViewDetails(topic.id)}
                         className="hover-scale"
                       >
                         <Eye className="h-3 w-3 mr-1" />
@@ -476,150 +465,6 @@ export function EventManagementPage() {
         </Table>
       </div>
 
-      {/* Topic Detail Dialog */}
-      <Dialog open={showTopicDetail} onOpenChange={setShowTopicDetail}>
-        <DialogContent className="max-w-5xl max-h-[85vh] overflow-y-auto bg-card border border-border shadow-lg">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-foreground">
-              Topic Details: {selectedTopic?.name}
-            </DialogTitle>
-          </DialogHeader>
-          
-          {selectedTopic && (
-            <Tabs defaultValue="info" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="info">Topic Info</TabsTrigger>
-                <TabsTrigger value="metrics">Kafka Metrics</TabsTrigger>
-                <TabsTrigger value="flow">Flow Link</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="info" className="space-y-6">
-                <div className="grid gap-6">
-                  <div className="professional-card p-6">
-                    <h3 className="text-lg font-semibold text-foreground mb-4">Basic Information</h3>
-                    <div className="grid grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <Label className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Topic Name</Label>
-                        <p className="text-base font-semibold text-foreground">{selectedTopic.name}</p>
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Status</Label>
-                        <div>
-                          <Badge variant="outline" className={`text-sm font-medium ${getStatusBadge(selectedTopic.status)}`}>
-                            {selectedTopic.status}
-                          </Badge>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Partitions</Label>
-                        <p className="text-base font-semibold text-foreground">{selectedTopic.partitions}</p>
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Replication Factor</Label>
-                        <p className="text-base font-semibold text-foreground">{selectedTopic.replicationFactor}</p>
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Created By</Label>
-                        <p className="text-base text-foreground">{selectedTopic.createdBy}</p>
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Created At</Label>
-                        <p className="text-sm text-muted-foreground mt-1">{formatDate(selectedTopic.createdAt)}</p>
-                      </div>
-                    </div>
-                    {selectedTopic.lastError && (
-                      <div className="mt-6 p-4 bg-destructive/10 rounded-lg border border-destructive/20">
-                        <Label className="text-sm font-medium text-destructive uppercase tracking-wider">Error Message</Label>
-                        <p className="text-sm text-destructive mt-2">
-                          {selectedTopic.lastError}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="metrics" className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="professional-card p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="p-2 bg-primary/10 rounded-lg">
-                        <BarChart3 className="h-5 w-5 text-primary" />
-                      </div>
-                      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Total Messages</h3>
-                    </div>
-                    <p className="text-3xl font-bold text-foreground">{selectedTopic.metrics.totalMessages.toLocaleString()}</p>
-                  </div>
-                  <div className="professional-card p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="p-2 bg-info/10 rounded-lg">
-                        <Users className="h-5 w-5 text-info" />
-                      </div>
-                      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Consumer Groups</h3>
-                    </div>
-                    <p className="text-3xl font-bold text-foreground">{selectedTopic.metrics.consumerGroups.length}</p>
-                  </div>
-                  <div className="professional-card p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="p-2 bg-warning/10 rounded-lg">
-                        <Network className="h-5 w-5 text-warning" />
-                      </div>
-                      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Partitions</h3>
-                    </div>
-                    <p className="text-3xl font-bold text-foreground">{selectedTopic.partitions}</p>
-                  </div>
-                </div>
-                
-                {selectedTopic.metrics.consumerGroups.length > 0 && (
-                  <div className="professional-card p-6">
-                    <h3 className="text-lg font-semibold text-foreground mb-4">Consumer Group Lag</h3>
-                    <div className="space-y-3">
-                      {selectedTopic.metrics.consumerGroups.map((group: string) => (
-                        <div key={group} className="flex items-center justify-between p-4 bg-muted/20 rounded-lg border">
-                          <span className="font-medium text-foreground">{group}</span>
-                          <Badge variant="outline" className="bg-warning text-warning-foreground border-warning">
-                            Lag: {selectedTopic.metrics.groupLags[group] || 0}
-                          </Badge>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </TabsContent>
-              
-              <TabsContent value="flow" className="space-y-6">
-                <div className="professional-card p-6">
-                  <h3 className="text-lg font-semibold text-foreground mb-4">Flow Connection</h3>
-                  {selectedTopic.linkedFlowEdge ? (
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Connected Flow Edge</Label>
-                        <p className="text-base font-semibold text-foreground">{selectedTopic.linkedFlowEdge}</p>
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Flow ID</Label>
-                        <p className="text-base font-semibold text-foreground">{selectedTopic.flowId}</p>
-                      </div>
-                      <Button variant="outline" className="w-fit hover-scale mt-4">
-                        <ExternalLink className="h-4 w-4 mr-2" />
-                        View Flow Details
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="text-center py-12 text-muted-foreground">
-                      <div className="p-4 bg-muted/30 rounded-full w-fit mx-auto mb-4">
-                        <Network className="h-12 w-12 opacity-50" />
-                      </div>
-                      <p className="text-lg">No Flow Connection</p>
-                      <p className="text-sm mt-1">This topic is not linked to any flow edge</p>
-                    </div>
-                  )}
-                </div>
-              </TabsContent>
-            </Tabs>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
