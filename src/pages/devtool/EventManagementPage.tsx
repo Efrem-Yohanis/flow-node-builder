@@ -7,16 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
-  Plus,
   Search,
   Eye,
-  RefreshCcw,
   Trash2,
-  RotateCcw,
   ExternalLink,
   Activity,
   AlertCircle,
-  Database,
   CheckCircle2,
   XCircle,
   AlertTriangle
@@ -196,65 +192,12 @@ export function EventManagementPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="professional-card p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Event Management</h1>
-            <p className="text-muted-foreground mt-1">Manage Kafka topics and event streaming infrastructure</p>
-          </div>
-          <Button className="hover-scale">
-            <Plus className="h-4 w-4 mr-2" />
-            Create Topic
-          </Button>
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Event Management</h1>
+          <p className="text-muted-foreground mt-1">Manage Kafka topics and event streaming infrastructure</p>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="metric-card">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-2xl font-bold text-foreground">{topics.length}</p>
-              <p className="text-sm text-muted-foreground">Total Topics</p>
-            </div>
-            <div className="p-3 bg-primary/10 rounded-lg">
-              <Database className="h-6 w-6 text-primary" />
-            </div>
-          </div>
-        </div>
-        <div className="metric-card">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-2xl font-bold text-success">{topics.filter(t => t.status === 'Created').length}</p>
-              <p className="text-sm text-muted-foreground">Active Topics</p>
-            </div>
-            <div className="p-3 bg-success/10 rounded-lg">
-              <CheckCircle2 className="h-6 w-6 text-success" />
-            </div>
-          </div>
-        </div>
-        <div className="metric-card">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-2xl font-bold text-warning">{topics.filter(t => t.status === 'Pending').length}</p>
-              <p className="text-sm text-muted-foreground">Pending Topics</p>
-            </div>
-            <div className="p-3 bg-warning/10 rounded-lg">
-              <AlertTriangle className="h-6 w-6 text-warning" />
-            </div>
-          </div>
-        </div>
-        <div className="metric-card">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-2xl font-bold text-destructive">{topics.filter(t => t.status === 'Failed').length}</p>
-              <p className="text-sm text-muted-foreground">Failed Topics</p>
-            </div>
-            <div className="p-3 bg-destructive/10 rounded-lg">
-              <XCircle className="h-6 w-6 text-destructive" />
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Filters & Search */}
       <div className="professional-card p-6">
@@ -418,44 +361,41 @@ export function EventManagementPage() {
                   </TableCell>
                   <TableCell className="px-6 py-5">
                     <div className="flex items-center justify-end gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleViewDetails(topic.id)}
-                        className="hover-scale"
-                      >
-                        <Eye className="h-3 w-3 mr-1" />
-                        View
-                      </Button>
-                      {topic.status === "Failed" && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleRetryCreate(topic.id)}
-                          className="hover-scale text-warning border-warning/30 hover:bg-warning/10"
-                        >
-                          <RotateCcw className="h-3 w-3 mr-1" />
-                          Retry
-                        </Button>
-                      )}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleSyncWithKafka(topic.id)}
-                        className="hover-scale"
-                      >
-                        <RefreshCcw className="h-3 w-3 mr-1" />
-                        Sync
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDeleteTopic(topic.id)}
-                        className="hover-scale text-destructive border-destructive/30 hover:bg-destructive/10"
-                      >
-                        <Trash2 className="h-3 w-3 mr-1" />
-                        Delete
-                      </Button>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              onClick={() => handleViewDetails(topic.id)}
+                              className="hover-scale h-9 w-9"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>View Details</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              onClick={() => handleDeleteTopic(topic.id)}
+                              className="hover-scale h-9 w-9 text-destructive border-destructive/30 hover:bg-destructive/10"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Delete Topic</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </div>
                   </TableCell>
                 </TableRow>
