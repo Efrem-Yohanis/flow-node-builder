@@ -29,7 +29,8 @@ import {
   Activity,
   TrendingUp,
   Users,
-  Clock
+  Clock,
+  Search
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -67,19 +68,31 @@ export function DevToolPage() {
   // Flows state
   const { data: flowsData, loading: flowsLoading } = useItems();
   const [flows, setFlows] = useState<any[]>([]);
+  const [filteredFlows, setFilteredFlows] = useState<any[]>([]);
+  const [flowSearchTerm, setFlowSearchTerm] = useState("");
+  const [flowStatusFilter, setFlowStatusFilter] = useState("all");
   const [showCreateFlowDialog, setShowCreateFlowDialog] = useState(false);
   const [showCloneFlowDialog, setShowCloneFlowDialog] = useState(false);
   const [flowToClone, setFlowToClone] = useState<any>(null);
   
   // Nodes state
   const [nodes, setNodes] = useState<any[]>([]);
+  const [filteredNodes, setFilteredNodes] = useState<any[]>([]);
+  const [nodeSearchTerm, setNodeSearchTerm] = useState("");
+  const [nodeStatusFilter, setNodeStatusFilter] = useState("all");
   const [nodesLoading, setNodesLoading] = useState(true);
   
   // Subnodes state  
   const { data: subnodesData, loading: subnodesLoading, refetch: refetchSubnodes } = useSubnodes();
+  const [filteredSubnodes, setFilteredSubnodes] = useState<any[]>([]);
+  const [subnodeSearchTerm, setSubnodeSearchTerm] = useState("");
+  const [subnodeStatusFilter, setSubnodeStatusFilter] = useState("all");
   
   // Parameters state
   const [parameters, setParameters] = useState<any[]>([]);
+  const [filteredParameters, setFilteredParameters] = useState<any[]>([]);
+  const [parameterSearchTerm, setParameterSearchTerm] = useState("");
+  const [parameterTypeFilter, setParameterTypeFilter] = useState("all");
   const [parametersLoading, setParametersLoading] = useState(true);
 
   // Git state
@@ -244,6 +257,86 @@ export function DevToolPage() {
       setGitLoading(false);
     }
   };
+
+  // Filter logic for flows
+  useEffect(() => {
+    let filtered = flows;
+
+    if (flowSearchTerm) {
+      filtered = filtered.filter(flow =>
+        flow.name.toLowerCase().includes(flowSearchTerm.toLowerCase())
+      );
+    }
+
+    if (flowStatusFilter !== "all") {
+      if (flowStatusFilter === "deployed") {
+        filtered = filtered.filter(flow => flow.is_deployed);
+      } else if (flowStatusFilter === "draft") {
+        filtered = filtered.filter(flow => !flow.is_deployed);
+      }
+    }
+
+    setFilteredFlows(filtered);
+  }, [flows, flowSearchTerm, flowStatusFilter]);
+
+  // Filter logic for nodes
+  useEffect(() => {
+    let filtered = nodes;
+
+    if (nodeSearchTerm) {
+      filtered = filtered.filter(node =>
+        node.name.toLowerCase().includes(nodeSearchTerm.toLowerCase())
+      );
+    }
+
+    if (nodeStatusFilter !== "all") {
+      if (nodeStatusFilter === "deployed") {
+        filtered = filtered.filter(node => node.is_deployed);
+      } else if (nodeStatusFilter === "draft") {
+        filtered = filtered.filter(node => !node.is_deployed);
+      }
+    }
+
+    setFilteredNodes(filtered);
+  }, [nodes, nodeSearchTerm, nodeStatusFilter]);
+
+  // Filter logic for subnodes
+  useEffect(() => {
+    let filtered = subnodesData?.results || [];
+
+    if (subnodeSearchTerm) {
+      filtered = filtered.filter(subnode =>
+        subnode.name.toLowerCase().includes(subnodeSearchTerm.toLowerCase())
+      );
+    }
+
+    if (subnodeStatusFilter !== "all") {
+      if (subnodeStatusFilter === "deployed") {
+        filtered = filtered.filter(subnode => subnode.published);
+      } else if (subnodeStatusFilter === "draft") {
+        filtered = filtered.filter(subnode => !subnode.published);
+      }
+    }
+
+    setFilteredSubnodes(filtered);
+  }, [subnodesData, subnodeSearchTerm, subnodeStatusFilter]);
+
+  // Filter logic for parameters
+  useEffect(() => {
+    let filtered = parameters;
+
+    if (parameterSearchTerm) {
+      filtered = filtered.filter(param =>
+        param.name.toLowerCase().includes(parameterSearchTerm.toLowerCase())
+      );
+    }
+
+    if (parameterTypeFilter !== "all") {
+      filtered = filtered.filter(param => param.type === parameterTypeFilter);
+    }
+
+    setFilteredParameters(filtered);
+  }, [parameters, parameterSearchTerm, parameterTypeFilter]);
 
   // Effects
   useEffect(() => {
@@ -1017,6 +1110,35 @@ export function DevToolPage() {
                       </Button>
                     </div>
                   </div>
+
+                  {/* Search and Filter */}
+                  <div className="professional-card p-6">
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <div className="flex-1">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            placeholder="Search flows by name..."
+                            value={flowSearchTerm}
+                            onChange={(e) => setFlowSearchTerm(e.target.value)}
+                            className="pl-10 surface-interactive"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex gap-3">
+                        <Select value={flowStatusFilter} onValueChange={setFlowStatusFilter}>
+                          <SelectTrigger className="w-[160px] surface-interactive">
+                            <SelectValue placeholder="All Status" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-card border border-border shadow-lg z-50">
+                            <SelectItem value="all">All Status</SelectItem>
+                            <SelectItem value="deployed">Deployed</SelectItem>
+                            <SelectItem value="draft">Draft</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
                   
                   {flowsLoading ? (
                     <div className="flex items-center justify-center py-12">
@@ -1026,7 +1148,7 @@ export function DevToolPage() {
                       </div>
                     </div>
                   ) : (
-                    renderFlowsList(getPaginatedItems(flows, 'flows'), flows.length)
+                    renderFlowsList(getPaginatedItems(filteredFlows, 'flows'), filteredFlows.length)
                   )}
                 </div>
               </TabsContent>
@@ -1049,6 +1171,35 @@ export function DevToolPage() {
                       </Button>
                     </div>
                   </div>
+
+                  {/* Search and Filter */}
+                  <div className="professional-card p-6">
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <div className="flex-1">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            placeholder="Search nodes by name..."
+                            value={nodeSearchTerm}
+                            onChange={(e) => setNodeSearchTerm(e.target.value)}
+                            className="pl-10 surface-interactive"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex gap-3">
+                        <Select value={nodeStatusFilter} onValueChange={setNodeStatusFilter}>
+                          <SelectTrigger className="w-[160px] surface-interactive">
+                            <SelectValue placeholder="All Status" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-card border border-border shadow-lg z-50">
+                            <SelectItem value="all">All Status</SelectItem>
+                            <SelectItem value="deployed">Deployed</SelectItem>
+                            <SelectItem value="draft">Draft</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
                   
                   {nodesLoading ? (
                     <div className="flex items-center justify-center py-12">
@@ -1058,7 +1209,7 @@ export function DevToolPage() {
                       </div>
                     </div>
                   ) : (
-                    renderNodesList(getPaginatedItems(Array.isArray(nodes) ? nodes : [], 'nodes'), Array.isArray(nodes) ? nodes.length : 0)
+                    renderNodesList(getPaginatedItems(Array.isArray(filteredNodes) ? filteredNodes : [], 'nodes'), Array.isArray(filteredNodes) ? filteredNodes.length : 0)
                   )}
                 </div>
               </TabsContent>
@@ -1081,6 +1232,35 @@ export function DevToolPage() {
                       </Button>
                     </div>
                   </div>
+
+                  {/* Search and Filter */}
+                  <div className="professional-card p-6">
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <div className="flex-1">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            placeholder="Search subnodes by name..."
+                            value={subnodeSearchTerm}
+                            onChange={(e) => setSubnodeSearchTerm(e.target.value)}
+                            className="pl-10 surface-interactive"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex gap-3">
+                        <Select value={subnodeStatusFilter} onValueChange={setSubnodeStatusFilter}>
+                          <SelectTrigger className="w-[160px] surface-interactive">
+                            <SelectValue placeholder="All Status" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-card border border-border shadow-lg z-50">
+                            <SelectItem value="all">All Status</SelectItem>
+                            <SelectItem value="deployed">Deployed</SelectItem>
+                            <SelectItem value="draft">Draft</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
                   
                   {subnodesLoading ? (
                     <div className="flex items-center justify-center py-12">
@@ -1090,7 +1270,7 @@ export function DevToolPage() {
                       </div>
                     </div>
                   ) : (
-                    renderSubnodesList(getPaginatedItems(subnodesData?.results || [], 'subnodes'), subnodesData?.results?.length || 0)
+                    renderSubnodesList(getPaginatedItems(filteredSubnodes, 'subnodes'), filteredSubnodes.length)
                   )}
                 </div>
               </TabsContent>
@@ -1113,6 +1293,36 @@ export function DevToolPage() {
                       </Button>
                     </div>
                   </div>
+
+                  {/* Search and Filter */}
+                  <div className="professional-card p-6">
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <div className="flex-1">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            placeholder="Search parameters by name..."
+                            value={parameterSearchTerm}
+                            onChange={(e) => setParameterSearchTerm(e.target.value)}
+                            className="pl-10 surface-interactive"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex gap-3">
+                        <Select value={parameterTypeFilter} onValueChange={setParameterTypeFilter}>
+                          <SelectTrigger className="w-[160px] surface-interactive">
+                            <SelectValue placeholder="All Types" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-card border border-border shadow-lg z-50">
+                            <SelectItem value="all">All Types</SelectItem>
+                            <SelectItem value="string">String</SelectItem>
+                            <SelectItem value="number">Number</SelectItem>
+                            <SelectItem value="boolean">Boolean</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
                   
                   {parametersLoading ? (
                     <div className="flex items-center justify-center py-12">
@@ -1122,7 +1332,7 @@ export function DevToolPage() {
                       </div>
                     </div>
                   ) : (
-                    renderParametersList(getPaginatedItems(parameters, 'parameters'), parameters.length)
+                    renderParametersList(getPaginatedItems(filteredParameters, 'parameters'), filteredParameters.length)
                   )}
                 </div>
               </TabsContent>
