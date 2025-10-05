@@ -35,6 +35,8 @@ import { TopicDetailPage } from "@/pages/mediations/components/TopicDetailPage";
 import { ConfigDetailPage } from "@/pages/mediations/components/ConfigDetailPage";
 import { ConfigDetailPage as DevToolConfigDetailPage } from "@/pages/devtool/ConfigDetailPage";
 import { TopicDetailPage as DevToolTopicDetailPage } from "@/pages/devtool/TopicDetailPage";
+import { NodePackageDetailPage } from "@/pages/devtool/NodePackageDetailPage";
+import { ReleaseNotePage } from "@/pages/devtool/ReleaseNotePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -68,6 +70,8 @@ const App = () => (
                 <Route path="/devtool" element={<DevToolPage />} />
                 <Route path="/devtool/config/:configType" element={<DevToolConfigDetailPage />} />
                 <Route path="/devtool/topics/:topicId" element={<DevToolTopicDetailPage />} />
+                <Route path="/devtool/node-packages/:packageId" element={<NodePackageDetailPage />} />
+                <Route path="/devtool/node-packages/:packageId/release-notes" element={<ReleaseNotePage />} />
                 
                 {/* Flow routes */}
                 <Route path="/flows/:id" element={<FlowDetailPage />} />

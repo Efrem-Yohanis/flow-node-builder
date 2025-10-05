@@ -30,7 +30,8 @@ import {
   TrendingUp,
   Users,
   Clock,
-  Search
+  Search,
+  Package
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -46,6 +47,7 @@ import axios from "axios";
 import { gitService, type GitInfo } from "@/services/gitService";
 import { EventManagementPage } from "./devtool/EventManagementPage";
 import { ConfigManagementPage } from "./devtool/ConfigManagementPage";
+import { NodePackageListPage } from "./devtool/NodePackageListPage";
 
 export function DevToolPage() {
   const navigate = useNavigate();
@@ -1089,6 +1091,10 @@ export function DevToolPage() {
                     <Settings className="mr-2 h-4 w-4" />
                     Config Management
                   </TabsTrigger>
+                  <TabsTrigger value="node-packages" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                    <Package className="mr-2 h-4 w-4" />
+                    Node Package Registry
+                  </TabsTrigger>
                 </TabsList>
               </div>
 
@@ -1345,6 +1351,11 @@ export function DevToolPage() {
               {/* Config Management Tab */}
               <TabsContent value="configs" className="p-6">
                 <ConfigManagementPage />
+              </TabsContent>
+
+              {/* Node Package Registry Tab */}
+              <TabsContent value="node-packages" className="p-6">
+                <NodePackageListPage />
               </TabsContent>
 
             </Tabs>
