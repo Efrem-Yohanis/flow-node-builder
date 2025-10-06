@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
@@ -13,7 +14,6 @@ import { PropertiesSection } from "./components/PropertiesSection";
 import { SubnodesSection } from "./components/SubnodesSection";
 import { VersionHistoryModal } from "./components/VersionHistoryModal";
 import { CreateVersionModal } from "./components/CreateVersionModal";
-import { FileText } from "lucide-react";
 import axios from 'axios';
 import { LoadingSpinner } from "@/components/ui/loading";
 
@@ -38,11 +38,6 @@ export function NodeDetailPage() {
 
   // Parameters management
   const [nodeParameters, setNodeParameters] = useState<any[]>([]);
-  
-  // Script content management
-  const [scriptContent, setScriptContent] = useState<string>("");
-  const [scriptLoading, setScriptLoading] = useState(false);
-  const [scriptError, setScriptError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchNode = async () => {
@@ -109,45 +104,6 @@ export function NodeDetailPage() {
     }
   };
 
-  // Fetch script content from version
-  const fetchScriptContent = async (familyId: string, versionNumber: number) => {
-    if (!familyId || !versionNumber) return;
-    
-    setScriptLoading(true);
-    setScriptError(null);
-    
-    try {
-      const scriptContent = await nodeService.getVersionScript(familyId, versionNumber);
-      setScriptContent(scriptContent);
-    } catch (err: any) {
-      console.error('Error fetching script content:', err);
-      
-      let errorMessage = err.message || 'Failed to load script content';
-      
-      // Handle specific error cases
-      if (err.message?.includes('404')) {
-        errorMessage = 'Script file not found';
-      } else if (err.message?.includes('403')) {
-        errorMessage = 'Access denied to script file';
-      } else if (err.message?.includes('500')) {
-        errorMessage = 'Server error while fetching script';
-      }
-      
-      setScriptError(errorMessage);
-      setScriptContent('');
-    } finally {
-      setScriptLoading(false);
-    }
-  };
-
-  // Effect to fetch script content when selected version changes
-  useEffect(() => {
-    if (selectedVersion) {
-      fetchScriptContent(selectedVersion.family, selectedVersion.version);
-    } else if (node?.published_version) {
-      fetchScriptContent(node.published_version.family, node.published_version.version);
-    }
-  }, [selectedVersion, node?.published_version]);
 
   // Event handlers
   const handleEditVersion = () => {
@@ -420,7 +376,7 @@ export function NodeDetailPage() {
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="parameters">Parameters</TabsTrigger>
           <TabsTrigger value="subnodes">Subnodes</TabsTrigger>
-          <TabsTrigger value="script">Script</TabsTrigger>
+          <TabsTrigger value="package">Package Version</TabsTrigger>
         </TabsList>
         
         <TabsContent value="parameters" className="space-y-4">
@@ -436,61 +392,139 @@ export function NodeDetailPage() {
           />
         </TabsContent>
         
-        <TabsContent value="script" className="space-y-4">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Python Script</h3>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">
-                  Version {selectedVersion?.version || node.published_version?.version}
-                </span>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    if (scriptContent) {
-                      navigator.clipboard.writeText(scriptContent);
-                      toast({
-                        title: "Code copied!",
-                        description: "Script content has been copied to clipboard",
-                      });
-                    }
-                  }}
-                  disabled={!scriptContent || scriptLoading || !!scriptError}
-                  className="gap-2"
-                >
-                  <FileText className="h-4 w-4" />
-                  Copy
-                </Button>
-              </div>
-            </div>
-            <div className="relative">
-              {scriptLoading ? (
-                <div className="flex items-center justify-center h-32 bg-muted rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-primary border-t-transparent"></div>
-                    <span className="text-sm text-muted-foreground">Loading script...</span>
+        <TabsContent value="package" className="space-y-4">
+          {selectedVersion?.package_version ? (
+            <div className="space-y-6">
+              {/* Header Card */}
+              <div className="bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 border border-primary/20 rounded-lg p-6">
+                <div className="flex items-start justify-between">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                      <h3 className="text-2xl font-semibold">Package Version {selectedVersion.package_version.version}</h3>
+                      <Badge 
+                        variant={selectedVersion.package_version.state === 'published' ? 'default' : 'secondary'}
+                        className="text-sm"
+                      >
+                        {selectedVersion.package_version.state}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Node Family: {selectedVersion.package_version.node_family_name}
+                    </p>
                   </div>
                 </div>
-              ) : scriptError ? (
-                <div className="bg-destructive/10 border border-destructive/20 text-destructive p-4 rounded-lg">
-                  <div className="font-medium">Script Loading Error</div>
-                  <div className="text-sm mt-1">{scriptError}</div>
-                  {scriptError.includes('backend server needs to configure URL routing') && (
-                    <div className="text-xs mt-2 text-muted-foreground">
-                      The backend server needs to add URL patterns to serve script files from the /node_scripts/ path.
-                    </div>
-                  )}
+              </div>
+
+              {/* Main Info Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Package ID Card */}
+                <div className="bg-card border rounded-lg p-5 space-y-2 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
+                    <span className="text-sm font-medium">Package ID</span>
+                  </div>
+                  <p className="text-sm font-mono text-foreground/90 break-all">{selectedVersion.package_version.id}</p>
                 </div>
-              ) : (
-                <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-sm max-h-96 overflow-y-auto">
-                  <code className="language-python whitespace-pre-wrap">
-                    {scriptContent || "No script content available"}
-                  </code>
-                </pre>
+
+                {/* Entry Point Card */}
+                <div className="bg-card border rounded-lg p-5 space-y-2 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                    </svg>
+                    <span className="text-sm font-medium">Entry Point</span>
+                  </div>
+                  <p className="text-sm font-mono text-foreground/90">{selectedVersion.package_version.entry_point || '—'}</p>
+                </div>
+
+                {/* Uploaded By Card */}
+                <div className="bg-card border rounded-lg p-5 space-y-2 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <span className="text-sm font-medium">Uploaded By</span>
+                  </div>
+                  <p className="text-sm text-foreground/90">{selectedVersion.package_version.uploaded_by || 'System'}</p>
+                </div>
+
+                {/* Upload Date Card */}
+                <div className="bg-card border rounded-lg p-5 space-y-2 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span className="text-sm font-medium">Uploaded At</span>
+                  </div>
+                  <p className="text-sm text-foreground/90">{new Date(selectedVersion.package_version.uploaded_at).toLocaleString()}</p>
+                </div>
+              </div>
+
+              {/* Package URL Card */}
+              {selectedVersion.package_version.package_url && (
+                <div className="bg-card border rounded-lg p-5 space-y-3 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span className="text-sm font-medium">Package URL</span>
+                  </div>
+                  <a 
+                    href={selectedVersion.package_version.package_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-sm text-primary hover:underline break-all flex items-center gap-2 group"
+                  >
+                    <span>{selectedVersion.package_version.package_url}</span>
+                    <svg className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </a>
+                </div>
+              )}
+
+              {/* Extracted Path Card */}
+              {selectedVersion.package_version.extracted_path_display && (
+                <div className="bg-card border rounded-lg p-5 space-y-3 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                    </svg>
+                    <span className="text-sm font-medium">Extracted Path</span>
+                  </div>
+                  <p className="text-sm font-mono bg-muted/50 px-3 py-2 rounded border text-foreground/90">
+                    {selectedVersion.package_version.extracted_path_display}
+                  </p>
+                </div>
+              )}
+
+              {/* Package Hash Card */}
+              {selectedVersion.package_version.package_hash && (
+                <div className="bg-card border rounded-lg p-5 space-y-3 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    <span className="text-sm font-medium">Package Hash (SHA-256)</span>
+                  </div>
+                  <p className="text-xs font-mono bg-muted/50 px-3 py-2 rounded border break-all text-foreground/90">
+                    {selectedVersion.package_version.package_hash}
+                  </p>
+                </div>
               )}
             </div>
-          </div>
+          ) : (
+            <div className="text-center py-12">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
+                <svg className="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                </svg>
+              </div>
+              <p className="text-muted-foreground">No package version information available</p>
+            </div>
+          )}
         </TabsContent>
       </Tabs>
 
