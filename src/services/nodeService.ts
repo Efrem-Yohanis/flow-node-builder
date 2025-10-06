@@ -259,7 +259,7 @@ export const nodeService = {
 
   // Create node family
   async createNodeFamily(data: { name: string; description: string; created_by: string }): Promise<Node> {
-    const response = await axiosInstance.post('node-families/create/', data);
+    const response = await axiosInstance.post('node-families/', data);
     return response.data;
   },
 
