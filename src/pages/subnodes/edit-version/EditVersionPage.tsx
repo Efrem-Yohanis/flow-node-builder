@@ -238,26 +238,31 @@ export function EditVersionPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Parameter Values</CardTitle>
-            {availableNodeVersions.length > 1 && (
-              <div className="flex items-center gap-2">
-                <Label>Node Version:</Label>
-                <Select
-                  value={selectedNodeVersion.toString()}
-                  onValueChange={(value) => setSelectedNodeVersion(parseInt(value))}
-                >
-                  <SelectTrigger className="w-32">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableNodeVersions.map((nodeVer) => (
-                      <SelectItem key={nodeVer} value={nodeVer.toString()}>
-                        v{nodeVer}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+            <div className="flex items-center gap-3">
+              <Label className="text-sm font-medium">Node Version:</Label>
+              <Select
+                value={selectedNodeVersion.toString()}
+                onValueChange={(value) => setSelectedNodeVersion(parseInt(value))}
+              >
+                <SelectTrigger className="w-40 bg-background border-input">
+                  <SelectValue placeholder="Select version" />
+                </SelectTrigger>
+                <SelectContent className="bg-background z-50">
+                  {availableNodeVersions.map((nodeVer) => (
+                    <SelectItem 
+                      key={nodeVer} 
+                      value={nodeVer.toString()}
+                      className="cursor-pointer hover:bg-accent"
+                    >
+                      Node Version {nodeVer}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Badge variant="outline" className="ml-2">
+                {parameterValues.length} parameters
+              </Badge>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
